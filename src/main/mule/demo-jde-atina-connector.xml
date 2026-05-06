@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:jdeatina="http://www.mulesoft.org/schema/mule/jdeatina" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd   http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd  http://www.mulesoft.org/schema/mule/jdeatina http://www.mulesoft.org/schema/mule/jdeatina/current/mule-jdeatina.xsd">
+    <http:listener-config name="demo-jde-atina-connector-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8082" />
+    </http:listener-config>
+    <apikit:config name="demo-jde-atina-connector-config" api="demo-jde-atina-connector.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <flow name="demo-jde-atina-connector-main">
+        <http:listener config-ref="demo-jde-atina-connector-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="demo-jde-atina-connector-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:BAD_REQUEST">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Bad request"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">400</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Method not allowed"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not acceptable"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Unsupported media type"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not Implemented"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="demo-jde-atina-connector-console" doc:id="37978e01-7476-444a-8de5-84f439e46577">
+        <http:listener config-ref="demo-jde-atina-connector-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="demo-jde-atina-connector-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="get:\v1\ws\getAdressBookUsingWS:demo-jde-atina-connector-config">
+        <flow-ref doc:name="demo-jde-process-ws-atina-get-ab-flow" doc:id="9822fc13-bd70-4acf-bf88-79b60d361517" name="demo-jde-process-ws-atina-get-ab-flow" />
+    </flow>
+    <flow name="get:\v1\ws\getCustomerUsingWS:demo-jde-atina-connector-config">
+        <flow-ref doc:name="demo-jde-process-ws-atina-get-customer-flow" doc:id="6cf9a781-5f8c-4a2d-8a12-cfdb0d4fc00c" name="demo-jde-process-ws-atina-get-customer-flow" />
+    </flow>
+    <flow name="get:\v1\auth\getCompanyWihtAuthentication:demo-jde-atina-connector-config">
+        <flow-ref doc:name="demo-jde-process-ws-atina-auth-flow" doc:id="2b3a27d2-7ddd-4299-9dac-e1ab29969552" name="demo-jde-process-ws-atina-auth-flow" />
+    </flow>
+    <flow name="post:\v1\ws\createCustomerUsingWS:application\json:demo-jde-atina-connector-config">
+        <flow-ref doc:name="demo-jde-process-ws-atina-create-customer-flow" doc:id="9f7f0d51-9254-4164-9e32-3352ba35643f" name="demo-jde-process-ws-atina-create-customer-flow" />
+    </flow>
+    <flow name="post:\v1\ws\createAdressBookUsingWS:application\json:demo-jde-atina-connector-config">
+		<flow-ref doc:name="Flow Reference" doc:id="c6432bf5-1ae0-4c65-a151-f60b000def62" name="demo-jde-process-ws-atina-create-ab-flow"/>
+    </flow>
+	<flow name="post:\v1\ws\createSOUsingWS:application\json:demo-jde-atina-connector-config">
+        <flow-ref doc:name="demo-jde-process-ws-atina-create-so-flow" doc:id="8b84ae47-774c-497b-83a1-120b724ce51a" name="demo-jde-process-ws-atina-create-so-flow" />
+    </flow>
+	<flow name="get:\v1\bsfn\getAdressBookUsingBSFN:demo-jde-atina-connector-config">
+        <choice doc:name="Choice" doc:id="9604c1e4-de2c-4542-817d-dce0bbfd0f50">
+            <when expression="#[(attributes.headers.mode default &quot;JDE_ATINA&quot;) == &quot;JDE_ATINA&quot;]">
+                <flow-ref doc:name="demo-jde-portx-connector-get-ab-flow" doc:id="79cbc7b1-27fb-40f8-a961-361e9cd9e005" name="demo-jde-portx-connector-get-ab-flow" />
+            </when>
+            <otherwise>
+                <flow-ref doc:name="demo-jde-portx-connector-get-ab-flow" doc:id="373ff62b-e24e-4406-afcb-56a473b694c8" name="demo-jde-portx-connector-get-ab-flow" />
+            </otherwise>
+        </choice>
+    </flow>
+	<flow name="post:\v1\bsfn\createAdressBookUsingBSFNs:application\json:demo-jde-atina-connector-config">
+        <choice doc:name="Choice" doc:id="73478a27-d57a-42c4-ab1c-113c0c5e951c">
+            <when expression="#[(attributes.headers.mode default &quot;JDE_ATINA&quot;) == &quot;JDE_ATINA&quot;]">
+                <flow-ref doc:name="demo-jde-portx-connector-create-ab-flow" doc:id="53ed7718-85c1-4487-b8b5-463a0b6b6014" name="demo-jde-portx-connector-create-ab-flow" />
+            </when>
+            <otherwise>
+                <flow-ref doc:name="demo-jde-portx-connector-create-ab-flow" doc:id="790b97f6-aab4-4b48-ba5b-2f6aad7d74e4" name="demo-jde-portx-connector-create-ab-flow" />
+            </otherwise>
+        </choice>
+    </flow>
+	<flow name="delete:\v1\bsfn\deleteAdressBookUsingBSFN:demo-jde-atina-connector-config">
+        <logger level="INFO" doc:name="Logger" doc:id="390cad40-d650-4aaf-891e-31995d95e6b1" message="Processing: delete:\v1\deleteAdressBookUsingBSFN" />
+        <choice doc:name="Choice" doc:id="4493564a-4ca9-440c-8c9f-d4408ebf8a69">
+            <when expression="#[(attributes.headers.mode default &quot;JDE_ATINA&quot;) == &quot;JDE_ATINA&quot;]">
+                <flow-ref doc:name="demo-jde-portx-connector-delete-ab-flow" doc:id="99d3810c-6c35-4737-a6cf-17d12e8a9602" name="demo-jde-portx-connector-delete-ab-flow" />
+            </when>
+            <otherwise>
+                <flow-ref doc:name="demo-jde-portx-connector-delete-ab-flow" doc:id="696a06d8-6c29-40d0-9ab5-4dba817e6c6a" name="demo-jde-portx-connector-delete-ab-flow" />
+            </otherwise>
+        </choice>
+    </flow>
+	<flow name="get:\v1\bsfn-prc\getCustomerUsingBSFN:demo-jde-atina-connector-config">
+        <choice doc:name="Choice" doc:id="e4ab1b26-fc66-448f-bf5e-49272c103988">
+            <when expression="#[(attributes.headers.mode default &quot;JDE_ATINA&quot;) == &quot;JDE_ATINA&quot;]">
+                <flow-ref doc:name="demo-jde-portx-connector-get-customer-flow" doc:id="c3acaea7-833e-4402-9ca4-383f48873332" name="demo-jde-portx-connector-get-customer-flow" />
+            </when>
+            <otherwise>
+                <flow-ref doc:name="demo-jde-portx-connector-get-customer" doc:id="68349fd1-b71c-4fb6-b28c-bbbe0e2d20f7" name="demo-jde-portx-connector-get-customer-flow" />
+            </otherwise>
+        </choice>
+    </flow>
+	<flow name="post:\v1\bsfn-prc\createCustomerUsingBSFNs:application\json:demo-jde-atina-connector-config">
+        <choice doc:name="Choice" doc:id="bea5af93-4bce-498c-8cd1-1bf7c248b109">
+            <when expression="#[(attributes.headers.mode default &quot;JDE_ATINA&quot;) == &quot;JDE_ATINA&quot;]">
+                <flow-ref doc:name="demo-jde-portx-connector-create-customer-flow" doc:id="a6920570-1745-4e8b-b723-e7d9b751978b" name="demo-jde-portx-connector-create-customer-flow" />
+            </when>
+            <otherwise>
+                <flow-ref doc:name="demo-jde-portx-connector-create-customer-flow" doc:id="3c9b9960-9610-4aa4-b541-c5d3dc3b0212" name="demo-jde-portx-connector-create-customer-flow" />
+            </otherwise>
+        </choice>
+    </flow>
+	<flow name="delete:\v1\bsfn-prc\deleteCustomerUsingBSFN:demo-jde-atina-connector-config">
+        <choice doc:name="Choice" doc:id="f4811f41-ddee-4dfb-a714-eaa94979d03d">
+            <when expression="#[(attributes.headers.mode default &quot;JDE_ATINA&quot;) == &quot;JDE_ATINA&quot;]">
+                <flow-ref doc:name="demo-jde-portx-connector-delete-customer-flow" doc:id="7c7c217a-aa4f-4c63-92c7-35a984a4da4b" name="demo-jde-portx-connector-delete-customer-flow" />
+            </when>
+            <otherwise>
+                <flow-ref doc:name="demo-jde-portx-connector-delete-customer-flow" doc:id="4689e477-6c50-4fa1-bbb4-d00743373355" name="demo-jde-portx-connector-delete-customer-flow" />
+            </otherwise>
+        </choice>
+    </flow>
+	<flow name="post:\v1\bsfn-prc\createSOUsingBSFN:application\json:demo-jde-atina-connector-config">
+        <choice doc:name="Choice" doc:id="76a0941c-fa8a-4a90-ab6a-7d05a6d3b0a1">
+            <when expression="#[(attributes.headers.mode default &quot;JDE_ATINA&quot;) == &quot;JDE_ATINA&quot;]">
+                <flow-ref doc:name="demo-jde-process-portx-generate-so-flow" doc:id="1f9f20d6-876e-438b-aea9-b9d1b3e93316" name="demo-jde-process-portx-generate-so-flow" />
+            </when>
+            <otherwise>
+                <flow-ref doc:name="demo-jde-process-portx-generate-so-flow" doc:id="f4175145-c44f-4482-8f19-df67432a7b76" name="demo-jde-process-portx-generate-so-flow" />
+            </otherwise>
+        </choice>
+    </flow>
+	<flow name="post:\v1\ube\submitUBER01010Z:application\json:demo-jde-atina-connector-config">
+        <choice doc:name="Choice" doc:id="f81dba7e-e4a4-4bd5-b308-2356c2867b14">
+            <when expression="#[(attributes.headers.mode default &quot;JDE_ATINA&quot;) == &quot;JDE_ATINA&quot;]">
+                <flow-ref doc:name="demo-jde-portx-connector-submit-ube-flow" doc:id="4ca020c8-325f-4fa7-853b-938ae94cddda" name="demo-jde-portx-connector-submit-ube-flow" />
+            </when>
+            <otherwise>
+                <flow-ref doc:name="demo-jde-portx-connector-submit-ube-flow" doc:id="e196f435-e713-4ca2-a696-9a9b658e1182" name="demo-jde-portx-connector-submit-ube-flow" />
+            </otherwise>
+        </choice>
+    </flow>
+	<flow name="get:\v1\events\getCustomerCreated:demo-jde-atina-connector-config">
+        <choice doc:name="Choice" doc:id="bcaec9e7-fd2d-4f7d-a73d-26cbbfe39baa">
+            <when expression="#[(attributes.headers.mode default &quot;JDE_ATINA&quot;) == &quot;JDE_ATINA&quot;]">
+                <flow-ref doc:name="demo-jde-portx-connector-event-get-customer-created-flow" doc:id="fa1be717-06da-439d-b03d-58a0c191a9b6" name="demo-jde-portx-connector-event-get-customer-created-flow" />
+            </when>
+            <otherwise>
+                <flow-ref doc:name="demo-jde-portx-connector-event-get-customer-created-flow" doc:id="487b7431-115f-47f7-a352-b639695f660b" name="demo-jde-portx-connector-event-get-customer-created-flow" />
+            </otherwise>
+        </choice>
+    </flow>
+</mule>

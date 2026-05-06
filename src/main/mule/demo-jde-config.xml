@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule 
+	xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+	xmlns:jdeatina="http://www.mulesoft.org/schema/mule/jdeatina" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/jdeatina http://www.mulesoft.org/schema/mule/jdeatina/current/mule-jdeatina.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+	
+	
+	<global-property doc:name="Global Property" doc:id="e2c73cb6-3875-4df9-9aa2-599902b59e2f" name="env" value="local" />
+	
+	<configuration-properties doc:name="Configuration properties" doc:id="77544e34-e7e2-4f57-8f38-e53d23d97302" file="jde-credentials-${env}.properties" />
+	
+	<configuration-properties doc:name="Configuration properties" doc:id="9714b3cf-9ba1-4a98-ad26-3beab3e9f130" file="salesforce-credentials.properties" />
+	
+	<jdeatina:config name="JDE_Atina_Config_for_Web_Services" doc:name="JDE Atina Config" doc:id="4064df7e-0da7-41be-9652-bbcaf2b4a4d8" >
+		<jdeatina:connection jdeUser="${config.jdeUser}" jdePassword="${config.jdePassword}" jdeEnvironment="${config.jdeEnvironment}" jdeRole="${config.jdeRole}" wsConnection="true" microServiceName="${config.microServiceName}" microServicePort="${config.microServicePort}" microserviceTimeOut="10"/>
+	</jdeatina:config>
+	
+	<jdeatina:config name="JDE_Atina_Config_Non_WS_Operation" doc:name="JDE Atina Config" doc:id="0b370602-999f-4188-941f-55966cbcc87b" >
+		<jdeatina:connection jdeUser="${config.jdeUser}" jdePassword="${config.jdePassword}" jdeEnvironment="${config.jdeEnvironment}" jdeRole="${config.jdeRole}" microServicePort="8077" microServiceName="localhost" microserviceTimeOut="10"/>
+	</jdeatina:config>
+	 
+	<os:object-store name="Object_store_JDE" doc:name="Object store" doc:id="5118d2c0-3308-44b6-8578-8857a474e8e5" maxEntries="1" />
+	
+	<vm:config name="VM_Config_JDE" doc:name="VM Config" doc:id="0049bb18-be87-43ae-9c3e-0f85ebfc8621" >
+		<vm:queues >
+			<vm:queue queueName="customers" />
+		</vm:queues>
+	</vm:config>
+	
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="eff2fb5b-0f10-46ce-9324-7c379b5e151e" >
+		<salesforce:basic-connection username="${config.salesforceUser}" password="${config.salesforcePassword}" securityToken="${config.salesforceSecirtyToken}" url="https://login.salesforce.com/services/Soap/u/61.0" />
+	</salesforce:sfdc-config>
+	 
+</mule>

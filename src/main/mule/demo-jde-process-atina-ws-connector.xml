@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:java="http://www.mulesoft.org/schema/mule/java" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:jdeatina="http://www.mulesoft.org/schema/mule/jdeatina" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/jdeatina http://www.mulesoft.org/schema/mule/jdeatina/current/mule-jdeatina.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+	<file:config name="File_Config" doc:name="File Config" doc:id="0955babe-5675-4d00-bc9c-ffd9ec43d5ef" />
+	<flow name="demo-jde-process-ws-atina-get-ab-flow" doc:id="7f866653-cef1-4a27-b913-99fcd0759d59" >
+		<jdeatina:invoke-ws wsName="oracle.e1.bssv.JP010000.AddressBookManager.getAddressBook" doc:name="Invoke WS Address Book Manager" doc:id="b4944ea4-5d18-423f-9dc5-f8f7e7294d96" config-ref="JDE_Atina_Config_for_Web_Services" >
+			<jdeatina:input-parameters ><![CDATA[#[output application/json
+---
+{
+	entity: {
+		entityId: attributes.queryParams.entityID as Number
+	}
+}]]]></jdeatina:input-parameters>
+		</jdeatina:invoke-ws>
+		<ee:transform doc:name="Transform Message" doc:id="26f09783-b62d-459c-8852-09f7bfd0dfc4" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="demo-jde-process-ws-atina-get-customer-flow" doc:id="2baa9e6e-37aa-4688-bc49-32f634422fb1" >
+		<jdeatina:invoke-ws wsName="oracle.e1.bssv.JP010020.CustomerManager.getCustomerV3" doc:name="Invoke WS Customer Manager - Get Customer" doc:id="6a2d8af7-aea9-46df-84d7-bb149d73c1b6" config-ref="JDE_Atina_Config_for_Web_Services">
+			<jdeatina:input-parameters><![CDATA[#[output application/json
+---
+{
+	entity: {
+		entityId: attributes.queryParams.entityID as Number
+	}
+}]]]></jdeatina:input-parameters>
+		</jdeatina:invoke-ws>
+		<ee:transform doc:name="Transform Message" doc:id="1b62f1f0-28d1-4d8a-b423-dd985abf109f">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="demo-jde-process-ws-atina-create-customer-flow" doc:id="2878d275-3c33-44c1-b349-55bf639e3955" >
+		<jdeatina:invoke-ws wsName="oracle.e1.bssv.JP010020.CustomerManager.processCustomer" doc:name="Invoke WS Customer Manager - Create Customer" doc:id="59f6dc45-a4fa-4a5d-a0b5-473270a6b5ef" config-ref="JDE_Atina_Config_for_Web_Services" >
+			<jdeatina:input-parameters ><![CDATA[#[output application/json
+---
+{
+	tax: {
+		taxExplanationCode: 'S',
+		personCorporationCode: '',
+		taxRateAreaCode: 'DEN'
+	},
+	dates: {
+		dateOpen: |2025-07-15T14:00:00-03:00|
+	},
+	processing: {
+		actionType: '1',
+		processingVersion: 'ZJDE00002'
+	},
+	invoice: {
+		paymentTermsCode: '',
+		currencyCodeTransaction: payload.paymentCurrency,
+		currencyCode: payload.paymentCurrency
+	},
+	credit: {
+		amountCreditLimit: 2000,
+		administrationCreditLimit: 2000
+	},
+	processAddressBook: {
+		addressBook: {
+			personCorporationCode: '',
+			isEntityTypePayables: false,
+			entityName: payload.customerName,
+			address: {
+				city: payload.customerCity,
+				addressLine1: payload.customerAddress,
+				addressLine2: '',
+				stateCode: payload.customerState,
+				addressLine3: '',
+				addressLine4: ''
+			},
+			isEntityTypePurchaser: false,
+			entityTypeCode: 'C',
+			processing: {
+				actionType: '1',
+				processingVersion: ''
+			}
+		}
+	},
+	customer: {
+		company: '00000'
+	}
+}]]]></jdeatina:input-parameters>
+		</jdeatina:invoke-ws>
+		<ee:transform doc:name="Transform Message" doc:id="7e683caa-33f3-460a-b831-1cbf37224818">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="demo-jde-process-ws-atina-auth-flow" doc:id="1d97baa4-4b97-4fd4-874c-adeec92aeba2" >
+		<set-variable value="#[attributes.queryParams]" doc:name="Save Qry Param" doc:id="55c7eea6-4ad1-457d-a7be-6ffcb1f0f364" variableName="queryParameters"/>
+		<jdeatina:authenticate authenticateOperation="Login using User and Password" doc:name="Authenticate" doc:id="4102e33e-3ae4-4409-8616-8c3c0d845c6f" config-ref="JDE_Atina_Config_for_Web_Services" >
+			<jdeatina:input-parameters ><![CDATA[#[output application/java
+---
+{
+	"JDE User": p('config.jdeUserMulesoft'),
+	"JDE Password": p('config.jdePassword'),
+	"JDE Environment": p('config.jdeEnvironment'),
+	"JDE Role": p('config.jdeRole'),
+	"Session Id": 0,
+	"Transaction ID": 0,
+	"JDE WS Connection": true
+}]]]></jdeatina:input-parameters>
+		</jdeatina:authenticate>
+		<jdeatina:invoke-ws wsName="oracle.e1.bssv.JP000010.CompanyManager.getCompany" doc:name="Invoke ws getCompany" doc:id="b1969415-4291-47a3-8f05-07376925bb8d" config-ref="JDE_Atina_Config_for_Web_Services" target="company" >
+			<jdeatina:input-parameters ><![CDATA[#[output application/json
+---
+{
+	"JDE Token": payload."JDE Token",
+	companyName: vars.queryParameters.companyName as String,
+	addressNumber: {
+		entityId: vars.queryParameters.companyAB as Number
+	},
+	companyKey: {
+		companyNumber: vars.queryParameters.companyNumber as String
+	}
+}]]]></jdeatina:input-parameters>
+		</jdeatina:invoke-ws>
+		<jdeatina:logout doc:name="Logout" doc:id="6d59e27c-aac5-4769-a878-89febad5a3af" config-ref="JDE_Atina_Config_for_Web_Services" >
+			<jdeatina:input-parameters ><![CDATA[#[output application/java
+---
+{
+	"JDE Token": vars.company."JDE Token",
+	"Transaction ID": 44444,
+	"JDE WS Connection": true
+}]]]></jdeatina:input-parameters>
+		</jdeatina:logout>
+		<ee:transform doc:name="Transform Message" doc:id="bbdcdf48-420b-4545-9b71-2f056ddbc28b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+vars.company]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="demo-jde-process-ws-atina-create-so-flow" doc:id="33c791cb-b0fc-4241-bfc4-9be506e32c83" >
+		<jdeatina:invoke-ws wsName="oracle.e1.bssv.JP420000.SalesOrderManager.processSalesOrder" doc:name="Invoke WS JP420000 Create SO" doc:id="b0e46e0b-179f-4726-8501-f9358acd409b" config-ref="JDE_Atina_Config_for_Web_Services" >
+			<jdeatina:input-parameters ><![CDATA[#[output application/json
+---
+{
+	header: {
+		businessUnit: '          30',
+		dateRequested: (payload.dateRequested default (now() as Date {format: "yyyy-MM-dd"})),
+		deliverTo: {
+			entityId: payload.deliverTo
+		},
+		salesOrderKey: {
+			documentTypeCode: 'SO',
+			documentCompany: '00001'
+		},
+		dateOrdered: now(),
+		company: '00001',
+		currencyCodeTo: 'USD',
+		processing: {
+			actionType: '1',
+			processingVersion: 'ZJDE0001'
+		},
+		detail: (payload.detail default []) map (d) -> {
+		      quantityOrdered: d.quantityOrdered,
+		      lineTypeCode: "S",
+		      product: {
+		        item: {
+		          itemId: d.itemId
+		        }
+		      },
+			  processing: {
+				actionType: '1'
+			  }
+		}, 
+		shipTo: {
+			customer: {
+				entityId: payload.shipTo
+			}
+		}
+	}
+}]]]></jdeatina:input-parameters>
+		</jdeatina:invoke-ws>
+		<ee:transform doc:name="Transform Message" doc:id="e7410433-8935-49f3-a72a-6774e5af583b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="demo-jde-process-ws-atina-create-ab-flow" doc:id="d08261d3-a785-4351-9ddd-1be39b243775" >
+		<jdeatina:invoke-ws wsName="oracle.e1.bssv.JP010000.AddressBookManager.processAddressBook" doc:name="Invoke WS Address Book Manager" doc:id="a5fbff69-fff3-48e1-9b1b-49a229408d2b" config-ref="JDE_Atina_Config_for_Web_Services" >
+			<jdeatina:input-parameters ><![CDATA[#[output application/json
+---
+{
+	addressBook: {
+		businessUnit: '           1',
+		personCorporationCode: 'C',
+		isEntityTypePayables: false,
+		entityName: payload.customerName,
+		address: {
+			mailingNameSecondary: payload.customerName,
+			city: payload.customerCity,
+			addressLine1: payload.customerAddress
+		},
+		isEntityTypeReceivables: 'C',
+		entityTypeCode: 'C',
+		processing: {
+			actionType: '1',
+			processingVersion: 'ZJDE0001'
+		}
+	}
+}]]]></jdeatina:input-parameters>
+		</jdeatina:invoke-ws>
+		<ee:transform doc:name="Transform Message" doc:id="ee04c8bc-eeb4-4425-ba70-285c81e91ad0" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+		<flow name="demo-jde-process-ws-atina-connector2" doc:id="05a50090-72d5-4380-989a-894ef0fe4893" >
+		<scheduler doc:name="Scheduler" doc:id="22290e28-3f00-47d7-8a7d-adbacfdf85d9" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="5" timeUnit="MINUTES"/>
+			</scheduling-strategy>
+		</scheduler>
+		<file:read doc:name="Read Gif" doc:id="8135242a-fd24-4cbf-8816-1d624a82ca36" config-ref="File_Config" path="/private/tmp/MOInput/Green.gif" outputMimeType="application/octet-stream" target="gifImage"/>
+    
+		<file:read doc:name="Read PDF" doc:id="96e6eb3d-0a76-445c-a6b2-11d95fea1762" config-ref="File_Config" path="/private/tmp/MOInput/Readme.pdf" outputMimeType="application/octet-stream" target="pdf" />
+		<jdeatina:invoke-ws doc:name="Invoke WS" doc:id="5ced0070-0baf-40c9-9788-48cb74bb160e" config-ref="JDE_Atina_Config_for_Web_Services" wsName="oracle.e1.bssv.JPR01MO1.RI_AddressBookMediaObjectManager.addAddressBookMO">
+			<jdeatina:input-parameters ><![CDATA[#[output application/java
+---
+{
+	mediaObject: {
+		moItems: [
+		{
+			szItemName: 'Green.gif',
+			szMoType: 'FILE',
+			szData: vars.gifImage
+		},
+		{
+			szItemName: 'Readme.pdf',
+			szMoType: 'FILE',
+			szData: vars.pdf
+		},
+		{ 
+			szMoType: 'TEXT',
+			szData: "This is a Memo"
+		},
+		{ 
+			szMoType: 'URL',
+			szItemName: "www.oracle.com"
+		}]
+	},
+	businessUnit: '1',
+	entityTypeCode: 'C',
+	entityName: 'Rocking13'
+}]]]></jdeatina:input-parameters>
+		</jdeatina:invoke-ws>
+		<logger level="INFO" doc:name="Logger" doc:id="3a2788e8-39bb-4d3e-af60-7f344ef07d4c" message="#[output application/java&#10;---&#10;payload.entityAddress.entity.entityId]"/>
+	</flow>
+</mule>

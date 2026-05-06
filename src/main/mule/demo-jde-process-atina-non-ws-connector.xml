@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:jdeatina="http://www.mulesoft.org/schema/mule/jdeatina"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/jdeatina http://www.mulesoft.org/schema/mule/jdeatina/current/mule-jdeatina.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+  
+	<flow name="demo-jde-portx-connector-get-ab-flow" doc:id="7506d631-18b8-4ff3-85a8-955b86436a4e" >
+		<jdeatina:invoke-bsfn doc:name="Invoke BSFN MBSFN Address Book" doc:id="e6fecd16-1964-4adb-861c-aee266ea849a" config-ref="JDE_Atina_Config_Non_WS_Operation" wsName="AddressBookMasterMBF">
+			<jdeatina:input-parameters ><![CDATA[#[output application/json
+---
+{
+	cActionCode: 'I',
+	cSuppressErrorMessages: '1',
+	szVersion: 'ZJDE0001',
+	mnAddressBookNumber: attributes.queryParams.entityID as Number
+}]]]></jdeatina:input-parameters>
+		</jdeatina:invoke-bsfn>
+		<ee:transform doc:name="Transform Message" doc:id="cc3605df-1159-44cc-bd84-e6cb5d10a738" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="demo-jde-process-portx-connectorFlow" doc:id="a9be09ff-56fb-4113-ba40-260bf99c3064" initialState="stopped">
+		<scheduler doc:name="Scheduler For Each 4 Minutes" doc:id="336847c2-2e94-4879-89d1-901b65b433a1" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="4" timeUnit="MINUTES"/>
+			</scheduling-strategy>
+		</scheduler>
+		<jdeatina:invoke-bsfn wsName="AddressBookMasterMBF" doc:name="Invoke BSFN MBSFN Address Book" doc:id="d91a860e-cbe7-4e83-b642-fe28387295c2" config-ref="JDE_Atina_Config_Non_WS_Operation">
+			<jdeatina:input-parameters><![CDATA[#[output application/json
+---
+{
+	cActionCode: 'I',
+	cSuppressErrorMessages: '1',
+	szVersion: 'ZJDE0001',
+	mnAddressBookNumber: 28
+}]]]></jdeatina:input-parameters>
+		</jdeatina:invoke-bsfn>
+		<logger level="INFO" doc:name="Logger" doc:id="e55c2c60-7412-494b-b726-6d8fc3d16e8f" message="#[payload]"/>
+	</flow>
+	<flow name="demo-jde-portx-connector-get-ab-flow-bk" doc:id="810ce4c6-6b2a-4456-8051-aa12592afc9f">
+		<jdeatina:authenticate authenticateOperation="Login using User and Password" doc:name="Authenticate" doc:id="f490c15b-99c7-4331-b0d7-d85ea625d0e6" config-ref="JDE_Atina_Config_for_Web_Services" target="auth">
+			<jdeatina:input-parameters><![CDATA[#[output application/java
+---
+{
+	"JDE User": p('config.jdeUserMulesoft'),
+	"JDE Password": p('config.jdePassword'),
+	"JDE Environment": p('config.jdeEnvironment'),
+	"JDE Role": p('config.jdeRole'),
+	"Session Id": 0,
+	"Transaction ID": 0,
+	"JDE WS Connection": false
+}]]]></jdeatina:input-parameters>
+		</jdeatina:authenticate>
+		<jdeatina:invoke-bsfn wsName="AddressBookMasterMBF" doc:name="Invoke BSFN MBSFN Address Book" doc:id="d092849b-b39e-4fa4-8344-795947c6577f" config-ref="JDE_Atina_Config_Non_WS_Operation" target="ab">
+			<jdeatina:input-parameters><![CDATA[#[output application/json
+---
+{
+	"JDE Token": vars.auth."JDE Token",
+	cActionCode: 'I',
+	cSuppressErrorMessages: '1',
+	szVersion: 'ZJDE0001',
+	mnAddressBookNumber: attributes.queryParams.entityID as Number
+}]]]></jdeatina:input-parameters>
+		</jdeatina:invoke-bsfn>
+		<jdeatina:logout doc:name="Logout" doc:id="92d1fc2a-a677-4cc8-83b9-62e875389969" config-ref="JDE_Atina_Config_for_Web_Services">
+			<jdeatina:input-parameters><![CDATA[#[output application/java
+---
+{
+	"JDE Token": vars.auth."JDE Token",
+	"Transaction ID": 44444,
+	"JDE WS Connection": false
+}]]]></jdeatina:input-parameters>
+		</jdeatina:logout>
+		<ee:transform doc:name="Transform Message" doc:id="83791897-dcd5-45c6-a42a-3ae65184f198">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+vars.ab]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="demo-jde-portx-connector-create-ab-flow" doc:id="f8400b76-9937-45a2-8482-7467e1ea6958">
+		<jdeatina:invoke-bsfn wsName="AddressBookMasterMBF" doc:name="Invoke BSFN Create Address Book" doc:id="aba442ba-98ac-4a3c-857c-af47d2724e54" config-ref="JDE_Atina_Config_Non_WS_Operation" target="addressBookRecord">
+			<jdeatina:input-parameters><![CDATA[#[output application/json
+---
+{
+	cActionCode: 'A',
+	cUpdateMasterFile: '1',
+	cSuppressErrorMessages: '1',
+	szVersion: 'ZJDE0001',
+	mnAddressBookNumber: 0,
+	szSearchType: 'C',
+	szAlphaName: payload.customerName,
+	szMailingName: payload.customerName,
+	szBusinessUnit: '           1',
+	szAddressLine1: payload.customerAddress,
+	szAddressLine2: '',
+	szAddressLine3: '',
+	szAddressLine4: '',
+	szCity: payload.customerCity,
+	szState: payload.customerState,
+	cPayablesYNM: 'N',
+	cReceivablesYN: 'Y',
+	cARAPNettingY: 'N',
+	cIndicatorFlg: 'A'
+}]]]></jdeatina:input-parameters>
+		</jdeatina:invoke-bsfn>
+		<ee:transform doc:name="Transform Message" doc:id="0b79424d-4fc5-4043-a1c1-83a3143ccb24">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	status: "Customer created successfully",
+	customerId: vars.addressBookRecord.mnAddressBookNumber as String
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="demo-jde-portx-connector-delete-ab-flow" doc:id="4348eedd-4d24-4287-b647-2b16e0e73121">
+		<jdeatina:invoke-bsfn wsName="AddressBookMasterMBF" doc:name="Invoke BSFN MBSFN Address Book" doc:id="fee53875-09b7-42b9-b215-58a16c7230a2" config-ref="JDE_Atina_Config_Non_WS_Operation" target="abRecord">
+			<jdeatina:input-parameters><![CDATA[#[output application/json
+---
+{
+	cActionCode: 'D',
+	cUpdateMasterFile: '1',
+	cSuppressErrorMessages: '1',
+	szVersion: 'ZJDE0001',
+	mnAddressBookNumber: attributes.queryParams.entityID as Number
+}]]]></jdeatina:input-parameters>
+		</jdeatina:invoke-bsfn>
+		<ee:transform doc:name="Transform Message" doc:id="5add9e44-2bf5-4265-b58f-b4b0cf9ce1ac">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	status: "AB has been deleted",
+	detail: vars.abRecord
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="demo-jde-portx-connector-get-customer-flow" doc:id="79fada9b-3e34-4065-8529-91b0d23db484">
+		<jdeatina:invoke-bsfn wsName="MBFCustomerMaster" doc:name="Invoke BSFN Get Customer" doc:id="de08216a-e284-40d9-819a-b9d91042b9b3" config-ref="JDE_Atina_Config_Non_WS_Operation" target="customerRecord">
+			<jdeatina:input-parameters><![CDATA[#[output application/json
+---
+{
+	cActionCode: 'I',
+	szVersion: 'ZJDE00001',
+	mnCustomerNumber: attributes.queryParams.entityID as Number
+}]]]></jdeatina:input-parameters>
+		</jdeatina:invoke-bsfn>
+		<jdeatina:invoke-bsfn wsName="AddressBookMasterMBF" doc:name="Invoke BSFN MBSFN Address Book" doc:id="c256745d-1606-42e2-8fc3-77f2f59e3053" config-ref="JDE_Atina_Config_Non_WS_Operation" target="abRecord">
+			<jdeatina:input-parameters><![CDATA[#[output application/json
+---
+{
+	cActionCode: 'I',
+	cSuppressErrorMessages: '1',
+	szVersion: 'ZJDE0001',
+	mnAddressBookNumber: attributes.queryParams.entityID as Number
+}]]]></jdeatina:input-parameters>
+		</jdeatina:invoke-bsfn>
+		<ee:transform doc:name="Transform Message" doc:id="9256d72a-ed50-4510-9654-7dc9c00e6640">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	status: "Customer detail",
+	detailCustomer: vars.customerRecord,
+	detailAB: vars.abRecord
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="demo-jde-portx-connector-create-customer-flow" doc:id="2f794272-5d6a-4d17-94d8-8f4708ea83f9" >
+		<jdeatina:transaction transactionOperation="Start Transaction" doc:name="Transaction - Start" doc:id="2a3d1984-e7cb-4440-bfb4-341e47779286" config-ref="JDE_Atina_Config_Non_WS_Operation" target="transaction">
+			<jdeatina:input-parameters><![CDATA[#[output application/java
+---
+{
+}]]]></jdeatina:input-parameters>
+		</jdeatina:transaction>
+		<jdeatina:invoke-bsfn wsName="AddressBookMasterMBF" doc:name="Invoke BSFN Create Address Book" doc:id="9c69aabf-157c-4851-9540-7ef2ab981d53" config-ref="JDE_Atina_Config_Non_WS_Operation" target="addressBookRecord">
+			<jdeatina:input-parameters><![CDATA[#[output application/json
+---
+{
+	"Transaction ID": vars.transaction."Transaction ID",
+	cActionCode: 'A',
+	cUpdateMasterFile: '1',
+	cSuppressErrorMessages: '1',
+	szVersion: 'ZJDE0001',
+	mnAddressBookNumber: 0,
+	szSearchType: 'C',
+	szAlphaName: payload.customerName,
+	szMailingName: payload.customerName,
+	szBusinessUnit: '           1',
+	szAddressLine1: payload.customerAddress,
+	szAddressLine2: '',
+	szAddressLine3: '',
+	szAddressLine4: '',
+	szCity: payload.customerCity,
+	szState: payload.customerState,
+	cPayablesYNM: 'N',
+	cReceivablesYN: 'Y',
+	cARAPNettingY: 'N',
+	cIndicatorFlg: 'A'
+}]]]></jdeatina:input-parameters>
+		</jdeatina:invoke-bsfn>
+		<jdeatina:invoke-bsfn wsName="MBFCustomerMaster" doc:name="Invoke BSFN Create Customer" doc:id="9d527832-9d37-4cac-9c81-54c89cc5e78f" config-ref="JDE_Atina_Config_Non_WS_Operation" target="customerRecord">
+			<jdeatina:input-parameters><![CDATA[#[output application/json
+---
+{
+	"Transaction ID": vars.transaction."Transaction ID",
+	cActionCode: 'A',
+	cUpdateMasterFile: '1',
+	szVersion: 'ZJDE00002',
+	szCompany: '00000',
+	szCurrencyCodeFrom: payload.paymentCurrency,
+	szTaxArea1: 'DEN',
+	szTaxExplanationCode1: 'S',
+	mnAmountCreditLimit: 200000,
+	szPaymentTermsAR: '',
+	szCurrencyCodeAmounts: payload.paymentCurrency,
+	mnAmountHighBalance: 300000,
+	cBatchProcessingMode: '',
+	mnCustomerNumber: vars.addressBookRecord.mnAddressBookNumber,
+	cPersonCorporationCode: '',
+	szVersionconsolidated: 'ZJDE00002',
+	DateEntered: |2025-07-15T14:00:00-03:00|
+}]]]></jdeatina:input-parameters>
+		</jdeatina:invoke-bsfn>
+		<jdeatina:transaction transactionOperation="Commit Transaction" doc:name="Transaction - Commit" doc:id="40ce33a1-cfa8-4663-9c70-247b939d3fda" config-ref="JDE_Atina_Config_Non_WS_Operation" target="commit">
+			<jdeatina:input-parameters><![CDATA[#[output application/java
+---
+{
+	"Transaction ID": vars.transaction."Transaction ID"
+}]]]></jdeatina:input-parameters>
+		</jdeatina:transaction>
+		<ee:transform doc:name="Transform Message" doc:id="f8e84edd-8d66-4daf-82ad-51fde4f46be5">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	status: "Customer created successfully",
+	customerId: vars.addressBookRecord.mnAddressBookNumber as String
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="6ff4cab0-cd03-4a48-94eb-6890f2dd67a3" when='#[vars.transaction."Transaction ID" != 0]'>
+				<jdeatina:transaction transactionOperation="Rollback Transaction" doc:name="Transaction - Rollback" doc:id="1129c4d7-ed5e-4b7d-b25b-3dfed9a774dd" config-ref="JDE_Atina_Config_Non_WS_Operation" target="commit">
+					<jdeatina:input-parameters><![CDATA[#[output application/java
+---
+{
+	"Transaction ID": vars.transaction."Transaction ID"
+}]]]></jdeatina:input-parameters>
+				</jdeatina:transaction>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+	<flow name="demo-jde-portx-connector-delete-customer-flow" doc:id="e41df62f-0c39-471b-8a15-add0318d2f55" >
+		<jdeatina:invoke-bsfn wsName="MBFCustomerMaster" doc:name="Invoke BSFN Create Customer" doc:id="5b544efe-cfd4-4dbb-8a6f-f70c3b3a489f" config-ref="JDE_Atina_Config_Non_WS_Operation" target="customerRecord">
+			<jdeatina:input-parameters><![CDATA[#[output application/json
+---
+{
+	cActionCode: 'D',
+	cUpdateMasterFile: '1',
+	szVersion: 'ZJDE00002',
+	mnCustomerNumber: attributes.queryParams.entityID as Number,
+	cPersonCorporationCode: '',
+	szVersionconsolidated: 'ZJDE00002'
+}]]]></jdeatina:input-parameters>
+		</jdeatina:invoke-bsfn>
+		<ee:transform doc:name="Transform Message" doc:id="514daa70-4675-4b0e-a93f-c06c7c41fd8e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	status: "Customer created deleted",
+	detail: vars.customerRecord
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="demo-jde-portx-connector-submit-ube-flow" doc:id="73c057bb-f344-4b0f-8550-2946f30e6884" >
+		<jdeatina:submit-batch-process ubeName="R01010Z-ZJDE0001" doc:name="Submit Batch Upload" doc:id="28aa06b1-1e6d-41fc-8d1b-b3c0a315c124" config-ref="JDE_Atina_Config_Non_WS_Operation" target="ubeSubmited" >
+			<jdeatina:input-parameters ><![CDATA[#[output application/json
+---
+{
+	"Report Interconnect": {
+		szEdiUserIdData: 'ALA'
+	},
+	"Processing Options": {
+		cProofFinalFlag: payload.PO_ProcessMode
+	},
+	"Data Selection": "F0101Z2.EDUS = '" ++ (payload.DataSelection_EDUS as String) ++ "' AND F0101Z2.EDTN>'001'"
+}]]]></jdeatina:input-parameters>
+		</jdeatina:submit-batch-process>
+		<jdeatina:get-batch-process-information operation="Get Job Status" doc:name="Get Batch Status" doc:id="d6b6d961-88a3-429f-8e9c-a9e592f1ddae" config-ref="JDE_Atina_Config_Non_WS_Operation" target="getStatus" >
+			<jdeatina:input-parameters ><![CDATA[#[output application/java
+---
+{
+	"JOB Number": vars.ubeSubmited."JOB Number" as String
+}]]]></jdeatina:input-parameters>
+		</jdeatina:get-batch-process-information>
+		<ee:transform doc:name="Transform Message" doc:id="b934c6cb-dd9a-4f50-9472-293b0bf7c1ba" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	status: "UBE submite with ID " ++ (vars.ubeSubmited."JOB Number" as String) ,
+	jobId: vars.getStatus."JOB Status"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="demo-jde-portx-connector-event-get-customer-created-flow" doc:id="2cd32744-9012-4efd-982e-7551a788503a" >
+		<jdeatina:poll-events operation="Capture Event Transactions" doc:name="Get Customers Created" doc:id="4e3a2b9e-9bcd-486e-af09-9512db1b14e9" config-ref="JDE_Atina_Config_Non_WS_Operation">
+			<jdeatina:input-parameters ><![CDATA[#[output application/java
+---
+{
+	"Transaction Code": 'JDECM',
+	"Last Batch Number (EDBT)": '',
+	"Max Qty Transactions to Read": attributes.queryParams.qtyRecords,
+	"Lock Events": 'N',
+	"Update Events": 'N',
+	"Match Interop Line Number": false
+}]]]></jdeatina:input-parameters>
+		</jdeatina:poll-events>
+		<ee:transform doc:name="Transform Message" doc:id="cd69adf2-a59c-4ef2-ace5-ba105c9d6666" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+read(payload."Event Transactions" as String,'application/xml')]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="demo-jde-process-portx-generate-so-flow" doc:id="3289ce56-a9c1-44ed-b57f-d99e529b2e4e" >
+		<jdeatina:invoke-bsfn wsName="F4211FSBeginDoc" doc:name="Invoke BSFN BeginDoc" doc:id="0bdd30f4-466e-4b00-bf15-71127a75a721" config-ref="JDE_Atina_Config_Non_WS_Operation" target="BeginDoc">
+			<jdeatina:input-parameters ><![CDATA[#[output application/json
+---
+{
+	cCMDocAction: 'A',
+	cCMProcessEdits: '1',
+	szCMComputerID: 'ATINA',
+	cCMUpdateWriteToWF: '2',
+	szCMProgramID: 'CORBA',
+	szCMVersion: 'ZJDE0001',
+	szOrderCo: '00001',
+	szOrderType: 'SO',
+	szBusinessUnit: '          30',
+	mnAddressNumber: payload.deliverTo,
+	jdRequestedDate: (payload.dateRequested default (now() as Date {
+		format: "yyyy-MM-dd"
+	})),
+	jdOrderDate: now(),
+	szReference: 'Atina Reference',
+	cMode: 'F',
+	szUserID: 'JDE',
+	cRetrieveOrderNo: '1'
+}]]]></jdeatina:input-parameters>
+		</jdeatina:invoke-bsfn>
+		<foreach doc:name="For Each" doc:id="6e71c9ff-5c98-4140-b058-268e620f16b6" collection="#[payload.detail]">
+			<jdeatina:invoke-bsfn wsName="F4211FSEditLine" doc:name="Invoke BSFN EditLine" doc:id="626c9edc-de09-4f95-8a72-e9a5cbc05730" config-ref="JDE_Atina_Config_Non_WS_Operation">
+				<jdeatina:input-parameters ><![CDATA[#[output application/json
+---
+{
+	mnCMJobNo: vars.BeginDoc.mnCMJobNumber,
+	cCMWriteToWFFlag: '2',
+	szCMComputerID: vars.BeginDoc.szCMComputerID,
+	mnOrderNo: vars.BeginDoc.mnOrderNo,
+	szOrderType: vars.BeginDoc.szOrderType,
+	szBusinessUnit: vars.BeginDoc.szBusinessUnit,
+	szItemNo: payload.itemId,
+	mnQtyOrdered: payload.quantityOrdered
+}]]]></jdeatina:input-parameters>
+			</jdeatina:invoke-bsfn>
+		</foreach>
+		<jdeatina:invoke-bsfn wsName="F4211FSEndDoc" doc:name="Invoke BSFN EndDoc" doc:id="c28b546c-540d-44c2-9346-8351241d5a1f" config-ref="JDE_Atina_Config_Non_WS_Operation" target="EndDoc">
+			<jdeatina:input-parameters ><![CDATA[#[output application/json
+---
+{
+	mnCMJobNo: vars.BeginDoc.mnCMJobNumber,
+	mnSalesOrderNo: vars.BeginDoc.mnOrderNo,
+	szCMComputerID: vars.BeginDoc.szCMComputerID,
+	szOrderType: vars.BeginDoc.szOrderType,
+	cCMUseWorkFiles: 2
+}]]]></jdeatina:input-parameters>
+		</jdeatina:invoke-bsfn>
+		<jdeatina:invoke-bsfn wsName="F4211ClearWorkFile" doc:name="Invoke BSFN ClearWorkFile" doc:id="b0cb3bff-1a9d-48b5-832b-4d733e69171c" config-ref="JDE_Atina_Config_Non_WS_Operation">
+			<jdeatina:input-parameters ><![CDATA[#[output application/json
+---
+{
+	mnJobNo: vars.BeginDoc.mnCMJobNumber,
+	szComputerID: 'ATINA',
+	cClearHeaderWF: '2',
+	cClearDetailWF: '2'
+}]]]></jdeatina:input-parameters>
+		</jdeatina:invoke-bsfn>
+		<ee:transform doc:name="Transform Message" doc:id="a6b09e97-2f78-4e77-bb61-ae3325967d49" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	BeginDoc: vars.BeginDoc,
+	EndDoc: vars.EndDoc
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	
+	
+</mule>

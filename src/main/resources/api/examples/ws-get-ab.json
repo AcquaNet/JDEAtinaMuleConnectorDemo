@@ -1,0 +1,139 @@
+{
+  "JDE Token": "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI0OTQ4MTYiLCJpYXQiOjE3NjYxNDc0MTcsInN1YiI6IlN1YmplY3QiLCJpc3MiOiJJc3N1ZSIsInVzZXIiOiJKREUiLCJwYXNzd29yZCI6IldraGZuMDJDZGlwREtLSTRuckZqSW1FNENzcVNzSnBNM2FDaVM3SmNDYk9yaTBZb09rTT0iLCJlbnZpcm9ubWVudCI6IkpEVjkyMCIsInJvbGUiOiIqQUxMIiwic2Vzc2lvbklkIjotMTYxMzYzODc0NywiZXhwIjoxNzY2MTUwNDE3fQ.rKeIRfNnqbKx6z1pOS-1goNZYYoB_Sw0Fg8sgPzp5aw",
+  "e1MessageList": {
+    "messagesAsString": "",
+    "E1Messages": []
+  },
+  "addressBookResult": [
+    {
+      "businessUnit": "           1",
+      "personCorporationCode": "C",
+      "taxExemptCertificate": "                    ",
+      "isEntityTypePayables": false,
+      "categoryCodesAddressBook": {
+        "categoryCode013": "   ",
+        "categoryCode012": "   ",
+        "categoryCode011": "   ",
+        "categoryCode010": "   ",
+        "categoryCode030": "   ",
+        "categoryCode019": "   ",
+        "categoryCode018": "   ",
+        "categoryCode017": "   ",
+        "categoryCode016": "   ",
+        "categoryCode015": "   ",
+        "categoryCode014": "   ",
+        "categoryCode002": "   ",
+        "categoryCode024": "   ",
+        "categoryCode001": "   ",
+        "categoryCode023": "   ",
+        "categoryCode022": "   ",
+        "categoryCode021": "   ",
+        "categoryCode020": "   ",
+        "categoryCode009": "   ",
+        "categoryCode008": "   ",
+        "categoryCode007": "   ",
+        "categoryCode029": "   ",
+        "categoryCode006": "   ",
+        "categoryCode028": "   ",
+        "categoryCode005": "   ",
+        "categoryCode027": "   ",
+        "categoryCode004": "   ",
+        "categoryCode026": "   ",
+        "categoryCode003": "   ",
+        "categoryCode025": "   "
+      },
+      "entityNameSecondary": "                                        ",
+      "userReservedData": {
+        "userReservedCode": "  ",
+        "userReservedDate": null,
+        "userReservedNumber": 0,
+        "userReservedReference": "               ",
+        "userReservedAmount": 0
+      },
+      "remark": "                              ",
+      "electronicAddresses": {},
+      "isEntityType4": "N",
+      "employeeGroupApprovalsCode": "     ",
+      "subledgerInactiveCode": " ",
+      "isEntityType3": "N",
+      "phoneNumbers": [
+        {
+          "phoneLineNumber": 2,
+          "areaCode": "303   ",
+          "phoneNumber": "555-0101            ",
+          "contactId": 0,
+          "relatedPersonId": 0,
+          "phoneTypeCode": "    "
+        },
+        {
+          "phoneLineNumber": 3,
+          "areaCode": "303   ",
+          "phoneNumber": "555-0100            ",
+          "contactId": 0,
+          "relatedPersonId": 0,
+          "phoneTypeCode": "FAX "
+        }
+      ],
+      "description1": "FINANCIALDISTRIBUTIONCOMPANY            ",
+      "isEntityType5": "N",
+      "relatedAddress": {
+        "entityIdRelated4": 1,
+        "entityIdRelated3": 1,
+        "entityIdRelated2": 1,
+        "entityIdRelated1": 1,
+        "entityIdRelated6": 1,
+        "entityIdRelated5": 1
+      },
+      "isEntityTypeEmployee": false,
+      "entityName": "Financial/Distribution Company --       ",
+      "isEntityTypeNettingIndicator": false,
+      "stock": {
+        "stockExchange": "          ",
+        "stockTickerSymbol": "          "
+      },
+      "industryClassificationCode": "6000      ",
+      "address": {
+        "countyCode": "                         ",
+        "mailingNameSecondary": "                                        ",
+        "city": "Denver                   ",
+        "countryCode": "US ",
+        "postalCode": "80237       ",
+        "dateEffective": null,
+        "addressLine1": "8055 East Tufts Avenue, Suite 1331      ",
+        "addressLine2": "                                        ",
+        "stateCode": "CO ",
+        "addressLine3": "                                        ",
+        "addressLine4": "                                        ",
+        "mailingName": "Financial/Distribution Company          "
+      },
+      "isEntityTypeReceivables": false,
+      "languageCode": "  ",
+      "entityTaxIdAdditional": "                    ",
+      "classifications": {
+        "classificationCode002": "   ",
+        "classificationCode001": "   ",
+        "classificationCode005": "   ",
+        "classificationCode004": "   ",
+        "classificationCode003": "   "
+      },
+      "isEntityTypePurchaser": false,
+      "entityTypeCode": "O  ",
+      "creditMessageCode": "  ",
+      "entity": {
+        "entityTaxId": "430788490           ",
+        "entityLongId": "                    ",
+        "entityId": 1
+      },
+      "statistics": {
+        "dunBradStreetId": "             ",
+        "rateGrowth": 0,
+        "glBankAccount": "        ",
+        "revenueRangeCode": "     ",
+        "yearCompanyFounded": "               ",
+        "numberOfEmployees": 0
+      },
+      "parents": {}
+    }
+  ],
+  "Correlation ID": 20251219092930744
+}

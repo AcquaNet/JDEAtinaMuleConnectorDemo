@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+	xmlns:os="http://www.mulesoft.org/schema/mule/os"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:jdeatina="http://www.mulesoft.org/schema/mule/jdeatina" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/jdeatina http://www.mulesoft.org/schema/mule/jdeatina/current/mule-jdeatina.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+	
+	<flow name="demo-sync-customersFlow" doc:id="fd08931a-a2ac-4690-9c68-ca544adaff4b" initialState="stopped">
+		
+		<scheduler doc:name="Scheduler" doc:id="96cf25e7-abb8-41ec-9f35-c00791eacd10" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="5" timeUnit="MINUTES"/>
+			</scheduling-strategy>
+		</scheduler>
+		
+		<os:retrieve doc:name="Retrieve Last EDBT" doc:id="6fa7b1ac-56a4-43b7-94a9-9a7ce3e3d24e" key="lastEDBT" objectStore="Object_store_JDE" target="lastEDBT">
+			<os:default-value ><![CDATA[#['']]]></os:default-value>
+		</os:retrieve>
+		<until-successful maxRetries="5" doc:name="Until Successful" doc:id="b58b136c-ca63-4c3a-a2eb-29a078ffaaa5" >
+			<jdeatina:poll-events operation="Capture Event Transactions" doc:name="Poll events" doc:id="adcdc867-f6f2-4f3b-b997-4f855dda5cea" config-ref="JDE_Atina_Config_Non_WS_Operation" target="event">
+			<jdeatina:input-parameters><![CDATA[#[output application/java
+---
+{
+	"Transaction Code": 'JDECM',
+	"Last Batch Number (EDBT)": vars.lastEDBT,
+	"Max Qty Transactions to Read": 2,
+	"Lock Events": 'N',
+	"Update Events": 'N',
+	"Match Interop Line Number": false
+}]]]></jdeatina:input-parameters>
+		</jdeatina:poll-events>
+			<ee:transform doc:name="Transform Message" doc:id="d0d23572-8c85-48ef-8d13-0ab3f3975632">
+			<ee:message>
+			</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="transactions" ><![CDATA[%dw 2.0
+output application/json
+---
+read(vars.event."Event Transactions" as String,'application/xml')]]></ee:set-variable>
+				</ee:variables>
+		</ee:transform>
+			<os:store doc:name="Store Last EDBT" doc:id="1146853b-1b5c-4156-a380-0d0079d68be7" objectStore="Object_store_JDE" key="lastEDBT">
+				<os:value ><![CDATA[#[vars.event."Last Batch Number (EDBT)"]]]></os:value>
+			</os:store>
+			<choice doc:name="Choice" doc:id="32307d9a-697f-452d-bc25-f61cad336253" >
+				<when expression='#[vars.event."Quantity Transactions Unprocessed" &gt; 0]'>
+					<foreach doc:name="For Each Transaction" doc:id="87fb5d3d-20fe-4cea-9366-e8dff64295cd" collection="#[vars.transactions.TRANSACTIONS]">
+						<vm:publish queueName="customers" doc:name="Publish" doc:id="85fea3f0-84e0-46aa-9a07-5bd6fba99a98" config-ref="VM_Config_JDE" sendCorrelationId="ALWAYS">
+							<vm:content ><![CDATA[#[output application/java
+---
+{
+	an8_customer_number: payload.TRANSACTION.TABLE_1.FORMAT_TABLE_F03012Z1.COLUMN_AN8,
+	tnac_action:  payload.TRANSACTION.TABLE_1.FORMAT_TABLE_F03012Z1.COLUMN_TNAC,
+	category: payload.TRANSACTION.TABLE_1.FORMAT_TABLE_F03012Z1.COLUMN_AC01
+}]]]></vm:content>
+						</vm:publish>
+					</foreach>
+				</when>
+			</choice>
+		</until-successful>
+	</flow>
+	<flow name="demo-sync-customersFlow1" doc:id="049bd7b6-0171-49f9-b79e-df7218e6e8b2" >
+		<vm:listener queueName="customers" doc:name="Listener" doc:id="85bf4cca-e3ec-4eaf-b403-d86304f7f74d" config-ref="VM_Config_JDE" numberOfConsumers="1"/>
+		<choice doc:name="Choice" doc:id="19ba74b1-93ff-4edf-8866-4a1ad74d38d0" >
+			<when doc:id="63f5d0f4-e111-4bc6-996a-6b3d534ba64a" expression="#[payload.tnac_action == 'A' or payload.tnac_action == 'UA']">
+				<jdeatina:invoke-ws wsName="oracle.e1.bssv.JP010000.AddressBookManager.getAddressBook" doc:name="Invoke WS Address Book Manager" doc:id="29399001-6dc6-443f-b7bd-f6616ae22440" config-ref="JDE_Atina_Config_for_Web_Services" target="addressBookJDE">
+			<jdeatina:input-parameters><![CDATA[#[output application/json
+---
+{
+	entity: {
+		entityId: payload.an8_customer_number as Number
+	}
+}]]]></jdeatina:input-parameters>
+		</jdeatina:invoke-ws>
+				<logger level="INFO" doc:name="Logger" doc:id="a64f824f-ec08-4c15-b172-5167c92c5d24" message="#['New Account: ' ++ vars.addressBookJDE.addressBookResult[0].entityName as String]"/>
+				<salesforce:upsert doc:name="Add or Update Account" doc:id="73e1d690-b436-40e5-8cdd-32472363ac5e" config-ref="Salesforce_Config" objectType="Account" externalIdFieldName="AN8CustomerAddress__c">
+					<salesforce:records ><![CDATA[#[%dw 2.0
+output application/java
+---
+[{
+	Name: vars.addressBookJDE.addressBookResult[0].entityName, 
+	Industry: 'Technology',
+	TickerSymbol: vars.addressBookJDE.addressBookResult[0].stock.stockTickerSymbol,
+	SLA__c: 'Gold',
+	Active__c: 'Yes',
+	SLASerialNumber__c: '1236',
+	AN8CustomerAddress__c: vars.addressBookJDE.addressBookResult[0].entity.entityId
+}]]]]></salesforce:records>
+				</salesforce:upsert>
+				<logger level="INFO" doc:name="Logger" doc:id="853d135d-5b1d-4c62-855e-56c9caa13893" message="#['Created ' ++ (payload.items.payload[0].created as String) ++ ' id: '++ (payload.items.payload[0].id as String)]"/>
+ 
+			</when>
+			<when doc:id="3bd8b4a7-1ad4-4bc4-bdd3-164c4459118a" expression="#[payload.tnac_action == 'D']">
+				<logger level="INFO" doc:name="Logger" doc:id="2545af0e-c3a2-4afa-ba9c-63d14a0b55f4" message="#['Deleting Account: ' ++ payload.an8_customer_number]"/>
+				<salesforce:upsert objectType="Account" externalIdFieldName="AN8CustomerAddress__c" doc:name="Disable Account" doc:id="26ffee9f-f69f-4bb1-94bf-ca868c96f1d2" config-ref="Salesforce_Config">
+					<salesforce:records><![CDATA[#[output application/java
+---
+[{
+	Active__c: 'No', 
+	AN8CustomerAddress__c: payload.an8_customer_number as Number
+}]]]]></salesforce:records>
+				</salesforce:upsert>
+				<logger level="INFO" doc:name="Logger" doc:id="aea022ad-ca43-427d-9841-661ab5c95ad3" message="#['Created ' ++ (payload.items.payload[0].created as String) ++ ' id: '++ (payload.items.payload[0].id as String)]"/>
+ 
+			</when>
+		</choice>
+	</flow>
+</mule>

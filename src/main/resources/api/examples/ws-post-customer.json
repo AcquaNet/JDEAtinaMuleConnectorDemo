@@ -1,0 +1,40 @@
+{
+  "JDE Token": "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI2MDQ2MTIiLCJpYXQiOjE3NjYxNDc3ODYsInN1YiI6IlN1YmplY3QiLCJpc3MiOiJJc3N1ZSIsInVzZXIiOiJKREUiLCJwYXNzd29yZCI6IkcwckZLaENtdmdKWDl5T0JKMTN5NDI3N3hrOFdnVHEzbXhYL0tLaTFuMnJGbW9USm9SYz0iLCJlbnZpcm9ubWVudCI6IkpEVjkyMCIsInJvbGUiOiIqQUxMIiwic2Vzc2lvbklkIjotMTYxMzYzODc0NywiZXhwIjoxNzY2MTUwNzg2fQ.COsH1jugRytN0grYDPkvTMGKAoEUWG69xQMyHcF-AZE",
+  "confirmCustomer": {
+    "company": "00000"
+  },
+  "e1MessageList": {
+    "messagesAsString": "",
+    "E1Messages": []
+  },
+  "electronicAddresses": {},
+  "confirmProcessAddressBook": {
+    "businessUnit": null,
+    "address": {
+      "countyCode": null,
+      "mailingNameSecondary": null,
+      "city": "Denver",
+      "countryCode": null,
+      "postalCode": null,
+      "dateEffective": null,
+      "addressLine1": "123 Main St",
+      "addressLine2": "",
+      "stateCode": "CO",
+      "addressLine3": "",
+      "addressLine4": "",
+      "mailingName": null
+    },
+    "entityName": "John Doe 123",
+    "entityTypeCode": "C",
+    "electronicAddresses": {},
+    "languageCode": null,
+    "entity": {
+      "entityTaxId": "",
+      "entityLongId": "",
+      "entityId": 61751
+    },
+    "phoneNumbers": {}
+  },
+  "phoneNumbers": {},
+  "Correlation ID": 20251219093611188
+}

@@ -1,0 +1,219 @@
+     
+{
+  "JDE Token": "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxNjE0NzkiLCJpYXQiOjE3NjYyNDQ0NzYsInN1YiI6IlN1YmplY3QiLCJpc3MiOiJJc3N1ZSIsInVzZXIiOiJKREUiLCJwYXNzd29yZCI6IkYzdzdvRERXS0JXcml3dHpVUUlyVUtpclcyOTBJR0s2K1VRdE5hZy9wd1ZKYzRxZ05CRT0iLCJlbnZpcm9ubWVudCI6IkpEVjkyMCIsInJvbGUiOiIqQUxMIiwic2Vzc2lvbklkIjotMTM4MTE3ODg4MCwiZXhwIjoxNzY2MjQ3NDc2fQ.8cuonTgZ5hnLDBh11p3ItpCAC0QRKxUnw0kzwDwidUQ",
+  "e1MessageList": {
+    "messagesAsString": "",
+    "E1Messages": []
+  },
+  "header": {
+    "delivery": {
+      "carrier": {
+        "entityTaxId": null,
+        "entityLongId": null,
+        "entityId": null
+      },
+      "freightHandlingCode": null
+    },
+    "businessUnit": "          30",
+    "amountTotalOrderDomestic": 2533,
+    "financial": {
+      "currencyCode": "USD",
+      "paymentTerms": "   "
+    },
+    "attachmentText": null,
+    "dates": {
+      "orderDate": "2025-12-20"
+    },
+    "actionType": "A",
+    "amountTotalOrderForeign": 0,
+    "salesOrderKey": {
+      "documentTypeCode": "SO",
+      "documentNumber": 3194,
+      "documentCompany": "00001"
+    },
+    "detail": [
+      {
+        "delivery": {
+          "carrier": {
+            "entityTaxId": null,
+            "entityLongId": null,
+            "entityId": null
+          },
+          "modeOfTransportCode": null
+        },
+        "product": {
+          "item": {
+            "itemId": 60011,
+            "itemUOMSecondary": null,
+            "itemProduct": "210                      ",
+            "itemCustomer": null,
+            "itemCatalog": "210                      ",
+            "itemDescription": null,
+            "itemFreeForm": null,
+            "itemUOMPrimary": null
+          },
+          "statusCodeNext": "540",
+          "lotNumber": "                              ",
+          "lineTypeCode": "S",
+          "statusCodeLast": "520"
+        },
+        "quantity": {
+          "quantityBackOrdered": 0,
+          "quantityShippable": 1,
+          "quantityOrdered": 1,
+          "unitOfMeasureCodeTransaction": "EA",
+          "quantityCanceled": 0
+        },
+        "documentLineNumber": 0,
+        "financial": {
+          "priceExtendedDomestic": 798,
+          "unitOfMeasureCodePricing": "EA",
+          "priceUnitForeign": 798,
+          "priceExtendedForeign": 798,
+          "priceUnitDomestic": 798
+        },
+        "dates": {
+          "timeRequested": null,
+          "dateRequested": null,
+          "datePromisedDelivery": null,
+          "timePromisedShip": null,
+          "datePromisedShip": null,
+          "timePromisedDelivery": null
+        },
+        "shipTo": {
+          "entityTaxId": null,
+          "entityLongId": null,
+          "entityId": 4242
+        }
+      },
+      {
+        "delivery": {
+          "carrier": {
+            "entityTaxId": null,
+            "entityLongId": null,
+            "entityId": null
+          },
+          "modeOfTransportCode": null
+        },
+        "product": {
+          "item": {
+            "itemId": 60038,
+            "itemUOMSecondary": null,
+            "itemProduct": "220                      ",
+            "itemCustomer": null,
+            "itemCatalog": "220                      ",
+            "itemDescription": null,
+            "itemFreeForm": null,
+            "itemUOMPrimary": null
+          },
+          "statusCodeNext": "540",
+          "lotNumber": "                              ",
+          "lineTypeCode": "S",
+          "statusCodeLast": "520"
+        },
+        "quantity": {
+          "quantityBackOrdered": 0,
+          "quantityShippable": 2,
+          "quantityOrdered": 2,
+          "unitOfMeasureCodeTransaction": "EA",
+          "quantityCanceled": 0
+        },
+        "documentLineNumber": 0,
+        "financial": {
+          "priceExtendedDomestic": 1300,
+          "unitOfMeasureCodePricing": "EA",
+          "priceUnitForeign": 650,
+          "priceExtendedForeign": 1300,
+          "priceUnitDomestic": 650
+        },
+        "dates": {
+          "timeRequested": null,
+          "dateRequested": null,
+          "datePromisedDelivery": null,
+          "timePromisedShip": null,
+          "datePromisedShip": null,
+          "timePromisedDelivery": null
+        },
+        "shipTo": {
+          "entityTaxId": null,
+          "entityLongId": null,
+          "entityId": 4242
+        }
+      },
+      {
+        "delivery": {
+          "carrier": {
+            "entityTaxId": null,
+            "entityLongId": null,
+            "entityId": null
+          },
+          "modeOfTransportCode": null
+        },
+        "product": {
+          "item": {
+            "itemId": 60020,
+            "itemUOMSecondary": null,
+            "itemProduct": "230                      ",
+            "itemCustomer": null,
+            "itemCatalog": "230                      ",
+            "itemDescription": null,
+            "itemFreeForm": null,
+            "itemUOMPrimary": null
+          },
+          "statusCodeNext": "540",
+          "lotNumber": "                              ",
+          "lineTypeCode": "S",
+          "statusCodeLast": "520"
+        },
+        "quantity": {
+          "quantityBackOrdered": 0,
+          "quantityShippable": 3,
+          "quantityOrdered": 3,
+          "unitOfMeasureCodeTransaction": "EA",
+          "quantityCanceled": 0
+        },
+        "documentLineNumber": 0,
+        "financial": {
+          "priceExtendedDomestic": 435,
+          "unitOfMeasureCodePricing": "EA",
+          "priceUnitForeign": 145,
+          "priceExtendedForeign": 435,
+          "priceUnitDomestic": 145
+        },
+        "dates": {
+          "timeRequested": null,
+          "dateRequested": null,
+          "datePromisedDelivery": null,
+          "timePromisedShip": null,
+          "datePromisedShip": null,
+          "timePromisedDelivery": null
+        },
+        "shipTo": {
+          "entityTaxId": null,
+          "entityLongId": null,
+          "entityId": 4242
+        }
+      }
+    ],
+    "holdOrderCode": "  ",
+    "customerPO": null,
+    "shipTo": {
+      "countyCode": "                         ",
+      "city": "Atlanta                  ",
+      "countryCode": "US ",
+      "postalCode": "30342       ",
+      "addressLine1": "400 Broadland Road NW                   ",
+      "addressLine2": "                                        ",
+      "stateCode": "GA ",
+      "addressLine3": "                                        ",
+      "addressLine4": "                                        ",
+      "mailingName": "Capital System                          ",
+      "customer": {
+        "entityTaxId": "45-34126801         ",
+        "entityLongId": "                    ",
+        "entityId": 4242
+      }
+    }
+  },
+  "Correlation ID": 20251220121709610
+}

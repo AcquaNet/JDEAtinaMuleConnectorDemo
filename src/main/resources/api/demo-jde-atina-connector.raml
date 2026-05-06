@@ -1,0 +1,598 @@
+#%RAML 1.0
+title: JDE Atina Connector Demo
+version: v1
+documentation:
+ - title: Home
+   content: |
+     Showing Atina JDE Connector.  
+
+/v1:
+#  ===========================================
+#  WEB SERVICES 
+#  ===========================================
+#
+#  Get Address Book using Web Service JP010000 AddressBookManager method getAddressBook.
+#
+  /ws:
+    /getAdressBookUsingWS:
+      get:
+        description: Get Address Book using Web Service
+        queryParameters:
+          entityID:
+            displayName: Address Book No
+            type: string
+            required: true
+        responses:
+          200:
+            description: OK
+            body:
+              application/json:
+                example: !include examples/ws-get-ab.json
+  #
+  #  Get Customer using WS.
+  #           
+    /getCustomerUsingWS:
+      get:
+        description: Get Customer using Web Service 
+        queryParameters:
+          entityID:
+            displayName: Address Book No
+            type: string
+            required: true
+        responses:
+          200:
+            description: OK
+            body:
+              application/json:
+                example: !include examples/ws-get-customer.json     
+  #
+  #  Create AB using WS.
+  #     
+    /createAdressBookUsingWS:
+      post:
+        description: Create AB using WS.
+        body:
+          application/json:
+            type: |
+              {
+                "type": "object",
+                "properties": {
+                  "customerName": {
+                    "type": "string",
+                    "displayName": "Customer Name"
+                  },
+                  "customerAddress": {
+                    "type": "string",
+                    "displayName": "Customer Address"
+                  }, 
+                  "customerCity": {
+                    "type": "string",
+                    "displayName": "Customer Address"
+                  },
+                  "customerState": {
+                    "type": "string",
+                    "displayName": "Customer Address"
+                  },
+                  "paymentCurrency": {
+                    "type": "string",
+                    "displayName": "Payment Currency",
+                    "pattern": "^[A-Z]{3}$",
+                    "description": "3-letter currency code (e.g., USD, EUR, ARS)"
+                  }
+                }
+              }
+            example: |
+              {
+                "customerName": "John Doe",
+                "customerAddress": "123 Main St",
+                "customerCity": "Denver",
+                "customerState": "CO",
+                "paymentCurrency": "USD"
+              }
+        responses:
+          200:
+            description: OK
+            body:
+              application/json:
+                example: !include examples/ws-post-ab.json
+  #
+  #  Create Customer using WS.
+  #                
+    /createCustomerUsingWS:
+      post:
+        description: Create Customer using WS.
+        body:
+          application/json:
+            type: |
+              {
+                "type": "object",
+                "properties": {
+                  "customerName": {
+                    "type": "string",
+                    "displayName": "Customer Name"
+                  },
+                  "customerAddress": {
+                    "type": "string",
+                    "displayName": "Customer Address"
+                  }, 
+                  "customerCity": {
+                    "type": "string",
+                    "displayName": "Customer Address"
+                  },
+                  "customerState": {
+                    "type": "string",
+                    "displayName": "Customer Address"
+                  },
+                  "paymentCurrency": {
+                    "type": "string",
+                    "displayName": "Payment Currency",
+                    "pattern": "^[A-Z]{3}$",
+                    "description": "3-letter currency code (e.g., USD, EUR, ARS)"
+                  }
+                }
+              }
+            example: |
+              {
+                "customerName": "John Doe",
+                "customerAddress": "123 Main St",
+                "customerCity": "Denver",
+                "customerState": "CO",
+                "paymentCurrency": "USD"
+              }
+        responses:
+          200:
+            description: OK
+            body:
+              application/json:
+                example: !include examples/ws-post-customer.json
+    /createSOUsingWS:
+      post:
+        description: Create SO using WS.
+        body:
+          application/json:
+            type: object
+            properties:
+              deliverTo:
+                displayName: Deliver To
+                type: integer
+                required: true
+                example: 4242
+              shipTo:
+                displayName: Ship To
+                type: integer
+                required: true
+                example: 4242
+              dateRequested:
+                displayName: Date Requested
+                type: date-only
+                required: true
+                example: 2025-12-20
+              detail:
+                displayName: Detail Lines
+                type: array
+                required: true
+                minItems: 1
+                items:
+                  type: object
+                  properties:
+                    quantityOrdered:
+                      displayName: Quantity Ordered
+                      type: integer
+                      required: true
+                      minimum: 1
+                      example: 1
+                    itemId:
+                      displayName: Item ID
+                      type: integer
+                      required: true
+                      example: 60011
+            example: |
+              {
+                "deliverTo": 4242,
+                "shipTo": 4242,
+                "dateRequested": "2025-12-20",
+                "detail": [
+                  { "quantityOrdered": 1, "itemId": 60011 },
+                  { "quantityOrdered": 2, "itemId": 60038 }
+                ]
+              }
+        responses:
+          200:
+            description: OK
+            body:
+              application/json:
+                example: !include examples/ws-post-so.json        
+#  ===========================================
+#  Authentication
+#  ===========================================
+#
+#   Get Company using Authentication.
+#       
+  /auth:        
+    /getCompanyWihtAuthentication:
+      get:
+        description: Get Company using Authentication.
+        queryParameters:
+          companyNumber:
+            displayName: Company Number
+            type: string
+            required: true
+            example: "00075"
+          companyName:
+            displayName: Company Name
+            type: string
+            required: true
+            example: "Cascades, Ltd"
+          companyAB:
+            displayName: Company AB
+            type: number
+            required: true
+            example: 75
+        responses:
+          200:
+            description: OK
+            body:
+              application/json:
+                example: !include examples/auth-process.json                         
+#  ===========================================
+#  BSFN SIMPLE
+#  ===========================================
+#
+#  Get Address Book using BSFN AddressBookMasterMBF.
+#
+  /bsfn:
+    /getAdressBookUsingBSFN:
+      get:
+        description: Get Address Book using BSFN AddressBookMasterMBF .
+        headers:
+          mode:
+            displayName: Mode
+            description: Execution mode
+            type: string
+            required: true
+            enum: [JDE_PORTX, JDE_ATINA]
+        queryParameters:
+          entityID:
+            displayName: Address Book No
+            type: string
+            required: true
+        responses:
+          200:
+            description: OK
+            body:
+              application/json:
+                example: !include examples/bsfn-get-ab.json
+  #
+  #  Get Address Book using BSFN AddressBookMasterMBF.
+  #
+    /createAdressBookUsingBSFNs:
+      post:
+        description: Create Customer using BSFN AddressBookMasterMBF and MBFCustomerMaster.
+        headers:
+          mode:
+            displayName: Mode
+            description: Execution mode
+            type: string
+            required: true
+            enum: [JDE_PORTX, JDE_ATINA]
+        body:
+          application/json:
+            type: |
+              {
+                "type": "object",
+                "properties": {
+                  "customerName": {
+                    "type": "string",
+                    "displayName": "Customer Name"
+                  },
+                  "customerAddress": {
+                    "type": "string",
+                    "displayName": "Customer Address"
+                  }, 
+                  "customerCity": {
+                    "type": "string",
+                    "displayName": "Customer Address"
+                  },
+                  "customerState": {
+                    "type": "string",
+                    "displayName": "Customer Address"
+                  },
+                  "paymentCurrency": {
+                    "type": "string",
+                    "displayName": "Payment Currency",
+                    "pattern": "^[A-Z]{3}$",
+                    "description": "3-letter currency code (e.g., USD, EUR, ARS)"
+                  }
+                }
+              }
+            example: |
+              {
+                "customerName": "John Doe",
+                "customerAddress": "123 Main St",
+                "customerCity": "Denver",
+                "customerState": "CO",
+                "paymentCurrency": "USD"
+              }
+        responses:
+          200:
+            description: OK
+            body:
+              application/json:
+                example: !include examples/bsfn-post-ab.json
+  
+  #
+  #  Delete Address Book using BSFN AddressBookMasterMBF.
+  #
+    /deleteAdressBookUsingBSFN:
+      delete:
+        description: Delete Address Book using BSFN AddressBookMasterMBF.
+        headers:
+          mode:
+            displayName: Mode
+            description: Execution mode
+            type: string
+            required: true
+            enum: [JDE_PORTX, JDE_ATINA]
+        queryParameters:
+          entityID:
+            displayName: Address Book No
+            type: string
+            required: true
+        responses:
+          200:
+            description: OK
+            body:
+              application/json:
+                example: !include examples/bsfn-delete-customer.json
+#  ===========================================
+#  BSFN DOUBLE
+#  ===========================================
+#
+#  Get Address Book using BSFN AddressBookMasterMBF.
+#
+  /bsfn-prc:
+    /getCustomerUsingBSFN:
+      get:
+        description: Get Customer using BSFN.
+        headers:
+          mode:
+            displayName: Mode
+            description: Execution mode
+            type: string
+            required: true
+            enum: [JDE_PORTX, JDE_ATINA]
+        queryParameters:
+          entityID:
+            displayName: Address Book No
+            type: string
+            required: true
+        responses:
+          200:
+            description: OK
+            body:
+              application/json:
+                example: !include examples/bsfn-prc-get-customer.json
+  #
+  #  Get Address Book using BSFN AddressBookMasterMBF.
+  #
+    /createCustomerUsingBSFNs:
+      post:
+        description: Create Customer using BSFN AddressBookMasterMBF and MBFCustomerMaster.
+        headers:
+          mode:
+            displayName: Mode
+            description: Execution mode
+            type: string
+            required: true
+            enum: [JDE_PORTX, JDE_ATINA]
+        body:
+          application/json:
+            type: |
+              {
+                "type": "object",
+                "properties": {
+                  "customerName": {
+                    "type": "string",
+                    "displayName": "Customer Name"
+                  },
+                  "customerAddress": {
+                    "type": "string",
+                    "displayName": "Customer Address"
+                  }, 
+                  "customerCity": {
+                    "type": "string",
+                    "displayName": "Customer Address"
+                  },
+                  "customerState": {
+                    "type": "string",
+                    "displayName": "Customer Address"
+                  },
+                  "paymentCurrency": {
+                    "type": "string",
+                    "displayName": "Payment Currency",
+                    "pattern": "^[A-Z]{3}$",
+                    "description": "3-letter currency code (e.g., USD, EUR, ARS)"
+                  }
+                }
+              }
+            example: |
+              {
+                "customerName": "John Doe",
+                "customerAddress": "123 Main St",
+                "customerCity": "Denver",
+                "customerState": "CO",
+                "paymentCurrency": "USD"
+              }
+        responses:
+          200:
+            description: OK
+            body:
+              application/json:
+                example: !include examples/bsfn-prc-post-customer.json
+  #
+  #  Delete Customer using BSFN.
+  #
+    /deleteCustomerUsingBSFN:
+      delete:
+        description: Delete Address Book using BSFN AddressBookMasterMBF.
+        headers:
+          mode:
+            displayName: Mode
+            description: Execution mode
+            type: string
+            required: true
+            enum: [JDE_PORTX, JDE_ATINA]
+        queryParameters:
+          entityID:
+            displayName: Address Book No
+            type: string
+            required: true
+        responses:
+          200:
+            description: OK
+            body:
+              application/json:
+                example: !include examples/bsfn-prc-delete-customer.json
+    /createSOUsingBSFN:
+      post:
+        description: Create SO using BSFN.
+        headers:
+          mode:
+            displayName: Mode
+            description: Execution mode
+            type: string
+            required: true
+            enum: [JDE_PORTX, JDE_ATINA]
+        body:
+          application/json:
+            type: object
+            properties:
+              deliverTo:
+                displayName: Deliver To
+                type: integer
+                required: true
+                example: 4242
+              shipTo:
+                displayName: Ship To
+                type: integer
+                required: true
+                example: 4242
+              dateRequested:
+                displayName: Date Requested
+                type: date-only
+                required: true
+                example: 2025-12-20
+              detail:
+                displayName: Detail Lines
+                type: array
+                required: true
+                minItems: 1
+                items:
+                  type: object
+                  properties:
+                    quantityOrdered:
+                      displayName: Quantity Ordered
+                      type: integer
+                      required: true
+                      minimum: 1
+                      example: 1
+                    itemId:
+                      displayName: Item ID
+                      type: string
+                      required: true
+                      example: '210'
+            example: |
+              {
+                "deliverTo": 4242,
+                "shipTo": 4242,
+                "dateRequested": "2025-12-20",
+                "detail": [
+                  { "quantityOrdered": 1, "itemId": "210" },
+                  { "quantityOrdered": 2, "itemId": "220" }
+                ]
+              }
+        responses:
+          200:
+            description: OK
+            body:
+              application/json:
+                example: !include examples/bsfn-post-so.json            
+#  ===========================================
+#  SUBMIT UBE
+#  ===========================================
+#
+#  Get Full Customer Information BSFN AddressBookMasterMBF.
+#
+#
+#  Get Address Book using BSFN AddressBookMasterMBF.
+#           
+  /ube:
+    /submitUBER01010Z:
+      post:
+        description: Sumbit UBE R01010Z-ZJDE0001 Address Book Batch Upload. 
+        headers:
+          mode:
+            displayName: Mode
+            description: Execution mode
+            type: string
+            required: true
+            enum: [JDE_PORTX, JDE_ATINA]
+        body:
+          application/json:
+            type: |
+              {
+                "type": "object",
+                "properties": {
+                  "PO_ProcessMode": {
+                    "type": "string",
+                    "pattern": "^[0,1]{1}$",
+                    "displayName": "Process Mode",
+                    "description": "Blank = Proof mode  or 1 = Final mode"
+                  },
+                  "DataSelection_EDUS": {
+                    "type": "string",
+                    "displayName": "EDUS User Transaction"
+                  } 
+                }
+              }
+            example: |
+              {
+                "PO_ProcessMode": "0",
+                "DataSelection_EDUS": "F0101Z2.AC01 = '105' AND F0101Z2.EDUS = 'JDE'"
+              }
+        responses:
+          200:
+            description: OK
+            body:
+              application/json:
+                example: !include examples/ube-process.json
+#  ===========================================
+#  EVENTS
+#  ===========================================
+#
+#  Get Full Customer Information BSFN AddressBookMasterMBF.
+#
+  /events:
+    /getCustomerCreated:
+      get:
+        description: Get Gustomer using outbound events.
+        headers:
+          mode:
+            displayName: Mode
+            description: Execution mode
+            type: string
+            required: true
+            enum: [JDE_PORTX, JDE_ATINA]
+        queryParameters:
+          qtyRecords:
+            displayName: Qty Records to poll (Max. 100)
+            type: number
+            required: true
+        responses:
+          200:
+            description: OK
+            body:
+              application/json:
+                example: !include examples/events-process.json
+
+ 

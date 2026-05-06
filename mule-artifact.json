@@ -1,0 +1,29 @@
+{
+    "classLoaderModelLoaderDescriptor": {
+        "attributes": {
+            "includeTestDependencies": "false",
+            "exportedPackages": [
+                "JDV920",
+                "JPS920"
+            ],
+            "exportedResources": [
+                "log4j2.xml",
+                "salesforce-credentials.properties",
+                "jde-credentials-remote.properties",
+                "jde-credentials-local.properties",
+                "JDV920/jdeinterop.ini",
+                "JDV920/jdbj.ini",
+                "JDV920/jdelog.properties",
+                "JPS920/jdeinterop.ini",
+                "JPS920/jdbj.ini",
+                "JPS920/jdelog.properties",
+                "log4j2.xml",
+                "jdelog.properties",
+                "JDE.lic"
+            ]
+        },
+        "id": "mule"
+    },
+    "minMuleVersion": "4.11.0",
+    "javaSpecificationVersions": ["17"]
+}

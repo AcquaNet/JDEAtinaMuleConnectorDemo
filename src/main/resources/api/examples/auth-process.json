@@ -1,0 +1,64 @@
+{
+  "JDE Token": "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI1MDgwOTEiLCJpYXQiOjE3NjYxNTM1NTEsInN1YiI6IlN1YmplY3QiLCJpc3MiOiJJc3N1ZSIsInVzZXIiOiJNVUxFU09GVCIsInBhc3N3b3JkIjoiR3BXYTRIWmFaQ2hQSHlQY0lmek1LR0VpSmF6cGlDK3RJWVVLaS9sT2tEMGM5Nzk3bmVrPSIsImVudmlyb25tZW50IjoiSkRWOTIwIiwicm9sZSI6IipBTEwiLCJzZXNzaW9uSWQiOjQxOTYyODE0NSwiZXhwIjoxNzY2MTU2NTUxfQ.S1VVvzJBCGgIND-WmKJaeCFZQh2r5uwM_E0lVPRDJAw",
+  "e1MessageList": {
+    "messagesAsString": "",
+    "E1Messages": []
+  },
+  "showCompanyResults": [
+    {
+      "finacial52PeriodAccounting": {
+        "financialRptPeriod52PeriodAcc": 1,
+        "financialRptYear52PeriodAcc": 0,
+        "numberOfPeriods52PeriodAcc": 52
+      },
+      "accountsReceivable": {
+        "currentARPeriodandBeginFiscalYear": {
+          "beginFiscalYear": "2017-01-01",
+          "currentPeriod": 6
+        }
+      },
+      "name": "Cascades, Ltd                 ",
+      "addressNumber": {
+        "entityTaxId": "                    ",
+        "entityLongId": "                    ",
+        "entityId": 75
+      },
+      "currency": {
+        "domesticCurrency": "CAD",
+        "postAccountBalancesByCurrency": "1",
+        "detailedCurrencyRestatement": "1",
+        "restatementComputation": " "
+      },
+      "companyKey": {
+        "companyNumber": "00075"
+      },
+      "accountsPayable": {
+        "currentAPPeriodandBeginFiscalYear": {
+          "beginFiscalYear": "2017-01-01",
+          "currentPeriod": 6
+        },
+        "useSuspenseAccount": "0"
+      },
+      "generalAccounting": {
+        "numberofPeriod": "12",
+        "currentGLPeriodandBeginFiscalYear": {
+          "beginFiscalYear": "2017-01-01",
+          "currentPeriod": 6
+        },
+        "fiscalDatePattern": "R"
+      },
+      "companyTaxConstants": {
+        "balanceGLDistributionByPayItem": " ",
+        "alternateTaxRateArea": {
+          "taxIdAndTaxAreaEdit": " ",
+          "enableAlternateTaxRateArea": " "
+        }
+      },
+      "financialReporting": {
+        "reportingPeriod": 5,
+        "reportingYear": 17
+      }
+    }
+  ],
+  "Correlation ID": 20251219111219450
+}
