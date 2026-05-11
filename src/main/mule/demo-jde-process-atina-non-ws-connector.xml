@@ -307,6 +307,7 @@ output application/json
 	"Data Selection": "F0101Z2.EDUS = '" ++ (payload.DataSelection_EDUS as String) ++ "' AND F0101Z2.EDTN>'001'"
 }]]]></jdeatina:input-parameters>
 		</jdeatina:submit-batch-process>
+		<logger level="INFO" doc:name="Logger Show Job ID" doc:id="3bbd81a1-6ac3-47c0-86a7-060a824ded5e" message='Job ID : + #[vars.ubeSubmited."JOB Number"]'/>
 		<jdeatina:get-batch-process-information operation="Get Job Status" doc:name="Get Batch Status" doc:id="d6b6d961-88a3-429f-8e9c-a9e592f1ddae" config-ref="JDE_Atina_Config_Non_WS_Operation" target="getStatus" >
 			<jdeatina:input-parameters ><![CDATA[#[output application/java
 ---

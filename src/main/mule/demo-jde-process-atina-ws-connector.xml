@@ -238,10 +238,10 @@ payload]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 	</flow>
-		<flow name="demo-jde-process-ws-atina-connector2" doc:id="05a50090-72d5-4380-989a-894ef0fe4893" >
+		<flow name="demo-jde-process-ws-atina-connector2" doc:id="05a50090-72d5-4380-989a-894ef0fe4893" initialState="started">
 		<scheduler doc:name="Scheduler" doc:id="22290e28-3f00-47d7-8a7d-adbacfdf85d9" >
 			<scheduling-strategy >
-				<fixed-frequency frequency="5" timeUnit="MINUTES"/>
+				<fixed-frequency frequency="60" timeUnit="MINUTES" startDelay="60"/>
 			</scheduling-strategy>
 		</scheduler>
 		<file:read doc:name="Read Gif" doc:id="8135242a-fd24-4cbf-8816-1d624a82ca36" config-ref="File_Config" path="/private/tmp/MOInput/Green.gif" outputMimeType="application/octet-stream" target="gifImage"/>
@@ -265,16 +265,16 @@ payload]]></ee:set-payload>
 		},
 		{ 
 			szMoType: 'TEXT',
-			szData: "This is a Memo"
+			szData: "This is a Demo for DBCT"
 		},
 		{ 
 			szMoType: 'URL',
-			szItemName: "www.oracle.com"
+			szItemName: "https://www.dbct.com.au/"
 		}]
 	},
 	businessUnit: '1',
 	entityTypeCode: 'C',
-	entityName: 'Rocking13'
+	entityName: 'Rocking14'
 }]]]></jdeatina:input-parameters>
 		</jdeatina:invoke-ws>
 		<logger level="INFO" doc:name="Logger" doc:id="3a2788e8-39bb-4d3e-af60-7f344ef07d4c" message="#[output application/java&#10;---&#10;payload.entityAddress.entity.entityId]"/>
