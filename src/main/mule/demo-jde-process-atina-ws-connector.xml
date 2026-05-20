@@ -247,7 +247,7 @@ payload]]></ee:set-payload>
 		<file:read doc:name="Read Gif" doc:id="8135242a-fd24-4cbf-8816-1d624a82ca36" config-ref="File_Config" path="/private/tmp/MOInput/Green.gif" outputMimeType="application/octet-stream" target="gifImage"/>
     
 		<file:read doc:name="Read PDF" doc:id="96e6eb3d-0a76-445c-a6b2-11d95fea1762" config-ref="File_Config" path="/private/tmp/MOInput/Readme.pdf" outputMimeType="application/octet-stream" target="pdf" />
-		<jdeatina:invoke-ws doc:name="Invoke WS" doc:id="5ced0070-0baf-40c9-9788-48cb74bb160e" config-ref="JDE_Atina_Config_for_Web_Services" wsName="oracle.e1.bssv.JPR01MO1.RI_AddressBookMediaObjectManager.addAddressBookMO">
+		<jdeatina:invoke-ws doc:name="Create AB with MO" doc:id="5ced0070-0baf-40c9-9788-48cb74bb160e" config-ref="JDE_Atina_Config_for_Web_Services" wsName="oracle.e1.bssv.JPR01MO1.RI_AddressBookMediaObjectManager.addAddressBookMO">
 			<jdeatina:input-parameters ><![CDATA[#[output application/java
 ---
 {

@@ -11,6 +11,73 @@ documentation:
 #  WEB SERVICES 
 #  ===========================================
 #
+#  Create AB with MO.
+#
+/createABwithMediaObject:
+  post:
+    description: Create Address Book with Media Object using BSFN and multipart/form-data.
+    body:
+      multipart/form-data:
+        properties:
+          abName:
+            displayName: AB Name
+            type: string
+            required: true
+            example: John Doe
+          abAddress:
+            displayName: AB Address
+            type: string
+            required: true
+            example: 123 Main St
+          abCity:
+            displayName: AB City
+            type: string
+            required: true
+            example: Denver
+          abState:
+            displayName: AB State
+            type: string
+            required: true
+            example: CO
+          mediaObjectText:
+            displayName: Media Object Text
+            type: string
+            required: false
+            example: Customer onboarding notes
+          mediaObjectUrl:
+            displayName: Media Object URL
+            type: string
+            required: false
+            example: https://example.com/customer/123
+          mediaObjectFile:
+            displayName: Media Object File
+            type: file
+            required: false
+            fileTypes: [application/pdf]
+        example: |
+          {
+            "abName": "John Doe",
+            "abAddress": "123 Main St",
+            "abCity": "Denver",
+            "abState": "CO",
+            "mediaObjectText": "Customer onboarding notes",
+            "mediaObjectUrl": "https://example.com/customer/123"
+          }
+    responses:
+      200:
+        description: OK
+        body:
+          application/json:
+            example: |
+              {
+                "entityID": "4242",
+                "abName": "John Doe",
+                "mediaObjectText": "Customer onboarding notes",
+                "mediaObjectUrl": "https://example.com/customer/123",
+                "mediaObjectFile": "uploaded.pdf",
+                "status": "SUCCESS"
+              }           
+#
 #  Get Address Book using Web Service JP010000 AddressBookManager method getAddressBook.
 #
   /ws:

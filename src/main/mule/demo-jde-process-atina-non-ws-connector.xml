@@ -26,24 +26,6 @@ payload]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 	</flow>
-	<flow name="demo-jde-process-portx-connectorFlow" doc:id="a9be09ff-56fb-4113-ba40-260bf99c3064" initialState="stopped">
-		<scheduler doc:name="Scheduler For Each 4 Minutes" doc:id="336847c2-2e94-4879-89d1-901b65b433a1" >
-			<scheduling-strategy >
-				<fixed-frequency frequency="4" timeUnit="MINUTES"/>
-			</scheduling-strategy>
-		</scheduler>
-		<jdeatina:invoke-bsfn wsName="AddressBookMasterMBF" doc:name="Invoke BSFN MBSFN Address Book" doc:id="d91a860e-cbe7-4e83-b642-fe28387295c2" config-ref="JDE_Atina_Config_Non_WS_Operation">
-			<jdeatina:input-parameters><![CDATA[#[output application/json
----
-{
-	cActionCode: 'I',
-	cSuppressErrorMessages: '1',
-	szVersion: 'ZJDE0001',
-	mnAddressBookNumber: 28
-}]]]></jdeatina:input-parameters>
-		</jdeatina:invoke-bsfn>
-		<logger level="INFO" doc:name="Logger" doc:id="e55c2c60-7412-494b-b726-6d8fc3d16e8f" message="#[payload]"/>
-	</flow>
 	<flow name="demo-jde-portx-connector-get-ab-flow-bk" doc:id="810ce4c6-6b2a-4456-8051-aa12592afc9f">
 		<jdeatina:authenticate authenticateOperation="Login using User and Password" doc:name="Authenticate" doc:id="f490c15b-99c7-4331-b0d7-d85ea625d0e6" config-ref="JDE_Atina_Config_for_Web_Services" target="auth">
 			<jdeatina:input-parameters><![CDATA[#[output application/java
