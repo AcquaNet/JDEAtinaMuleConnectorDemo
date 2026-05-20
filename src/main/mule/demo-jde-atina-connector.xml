@@ -232,4 +232,7 @@ output application/json
             </otherwise>
         </choice>
     </flow>
+	<flow name="post:\v1\ws\createABwithMediaObject:application\json:demo-jde-atina-connector-config" doc:id="d7be492c-34b0-448b-9322-cf0b39986d52" >
+		<flow-ref doc:name="demo-jde-process-ws-atina-createABwithMO-flow" doc:id="03965e67-0095-4bc2-a595-3eb3d586983a" name="demo-jde-process-ws-atina-createABwithMO-flow" />
+	</flow>
 </mule>
