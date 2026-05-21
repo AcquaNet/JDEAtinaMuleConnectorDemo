@@ -239,39 +239,70 @@ payload]]></ee:set-payload>
 		</ee:transform>
 	</flow>
 		<flow name="demo-jde-process-ws-atina-createABwithMO-flow" doc:id="05a50090-72d5-4380-989a-894ef0fe4893" initialState="started">
-		<file:read doc:name="Read Gif" doc:id="8135242a-fd24-4cbf-8816-1d624a82ca36" config-ref="File_Config" path="/private/tmp/MOInput/Green.gif" outputMimeType="application/octet-stream" target="gifImage"/>
-    
-		<file:read doc:name="Read PDF" doc:id="96e6eb3d-0a76-445c-a6b2-11d95fea1762" config-ref="File_Config" path="/private/tmp/MOInput/Readme.pdf" outputMimeType="application/octet-stream" target="pdf" />
-		<jdeatina:invoke-ws doc:name="Create AB with MO" doc:id="5ced0070-0baf-40c9-9788-48cb74bb160e" config-ref="JDE_Atina_Config_for_Web_Services" wsName="oracle.e1.bssv.JPR01MO1.RI_AddressBookMediaObjectManager.addAddressBookMO">
+		
+<!-- 	    <file:read doc:name="Read PDF" doc:id="6050bd11-4d80-47db-ae53-7e68b4570c49" config-ref="File_Config" path="/private/tmp/MOInput/Readme.pdf" outputMimeType="application/octet-stream" target="pdf" /> -->
+		
+		<ee:transform doc:name="Convert Multipart" doc:id="3d057f96-df72-4429-893d-ac01c4dfe109" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="multipart" ><![CDATA[%dw 2.0
+output application/dw
+---
+payload]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="Set Content" doc:id="0733a13d-a05e-484c-9058-2d790b4794be" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="mediaObjectFile" ><![CDATA[%dw 2.0
+output application/octet-stream
+---
+vars.multipart.parts.mediaObjectFile.content as Binary]]></ee:set-variable>
+				<ee:set-variable variableName="mediaObjectText" ><![CDATA[%dw 2.0
+output application/octet-stream
+---
+vars.multipart.parts.mediaObjectText.content as Binary]]></ee:set-variable>
+				<ee:set-variable variableName="mediaObjectUrl" ><![CDATA[%dw 2.0
+output application/octet-stream
+---
+vars.multipart.parts.mediaObjectUrl.content as Binary]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<jdeatina:invoke-ws doc:name="Create AB with MO" doc:id="5ced0070-0baf-40c9-9788-48cb74bb160e" config-ref="JDE_Atina_Config_for_Web_Services" wsName="oracle.e1.bssv.JPR01MO1.RI_AddressBookMediaObjectManager.addAddressBookMO" target="response">
 			<jdeatina:input-parameters ><![CDATA[#[output application/java
 ---
 {
 	mediaObject: {
-		moItems: [
+		moItems: [{
+		      szItemName: vars.multipart.parts.mediaObjectFile.headers."Content-Disposition".filename as String,
+		      szMoType: 'FILE',
+		      szData: vars.mediaObjectFile
+		    },
 		{
-			szItemName: 'Green.gif',
-			szMoType: 'FILE',
-			szData: vars.gifImage
-		},
-		{
-			szItemName: 'Readme.pdf',
-			szMoType: 'FILE',
-			szData: vars.pdf
-		},
-		{ 
 			szMoType: 'TEXT',
-			szData: "This is a Demo for DBCT"
+			szData: vars.mediaObjectText
 		},
-		{ 
-			szMoType: 'URL',
-			szItemName: "https://www.dbct.com.au/"
-		}]
+    {
+      szMoType: 'URL',
+      szItemName: vars.mediaObjectUrl as String
+    }]
 	},
-	businessUnit: '1',
+	businessUnit: "1",
 	entityTypeCode: 'C',
-	entityName: 'Rocking14'
+	entityName: vars.multipart.parts.abName.content as String
+	 
 }]]]></jdeatina:input-parameters>
 		</jdeatina:invoke-ws>
+		<ee:transform doc:name="Transform Message" doc:id="f18461a9-419b-4ca6-9814-fc567d825b5a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+vars.response]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
 		<logger level="INFO" doc:name="Logger" doc:id="3a2788e8-39bb-4d3e-af60-7f344ef07d4c" message="#[output application/java&#10;---&#10;payload.entityAddress.entity.entityId]"/>
 	</flow>
 </mule>
