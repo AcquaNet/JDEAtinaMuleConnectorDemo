@@ -233,6 +233,12 @@ output application/json
         </choice>
     </flow>
     <flow name="post:\v1\ws\createABwithMediaObject:multipart\form-data:demo-jde-atina-connector-config">
-		<flow-ref doc:name="demo-jde-process-ws-atina-createABwithMO-flow" doc:id="03965e67-0095-4bc2-a595-3eb3d586983a" name="demo-jde-process-ws-atina-createABwithMO-flow" />
+        <flow-ref doc:name="demo-jde-process-atina-ws-connector-mo-flow" doc:id="c512192a-49c8-454c-96ba-1317d48132c6" name="demo-jde-process-atina-ws-connector-mo-flow" />
+    </flow>
+    <flow name="get:\v1\bsfn-prc\getSupplierUsingBSFN:demo-jde-atina-connector-config">
+        <flow-ref doc:name="demo-jde-portx-connector-get-supplier-flow" doc:id="a7b22453-027a-4254-91e7-511425970879" name="demo-jde-portx-connector-get-supplier-flow"/>
+    </flow>
+    <flow name="post:\v1\bsfn-prc\createSupplierUsingBSFNs:application\json:demo-jde-atina-connector-config">
+        <flow-ref doc:name="demo-jde-portx-connector-create-supplier-flow" doc:id="15273fb7-3460-4eb1-86e1-ce5f6f0b13fd" name="demo-jde-portx-connector-create-supplier-flow"/>
     </flow>
 </mule>

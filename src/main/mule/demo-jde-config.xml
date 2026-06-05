@@ -32,8 +32,8 @@ http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/cu
 		jdePassword="${config.jdePassword}" 
 		jdeEnvironment="${config.jdeEnvironment}" 
 		jdeRole="${config.jdeRole}" 
-		microServicePort="8077" 
-		microServiceName="localhost" 
+		microServicePort="${config.microServicePort}" 
+		microServiceName="${config.microServiceName}" 
 		microserviceTimeOut="10"/>
 	</jdeatina:config>
 	 

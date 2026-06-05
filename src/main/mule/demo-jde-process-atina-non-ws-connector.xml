@@ -164,6 +164,112 @@ output application/json
 			</ee:message>
 		</ee:transform>
 	</flow>
+	<flow name="demo-jde-portx-connector-get-supplier-flow" doc:id="2ec24c79-7fd8-410f-a8bd-73d340b24aae" >
+		<jdeatina:invoke-bsfn wsName="SupplierMaster" doc:name="Invoke BSFN Get Customer" doc:id="52da9b5c-9d6b-4863-8855-77377dd7123c" config-ref="JDE_Atina_Config_Non_WS_Operation" target="supplierRecord" >
+			<jdeatina:input-parameters ><![CDATA[#[output application/json
+---
+{
+	cActionCode: 'I',
+	szVersion: 'ZJDE00001',
+	mnAddressNumber: attributes.queryParams.entityID as Number 
+}]]]></jdeatina:input-parameters>
+		</jdeatina:invoke-bsfn>
+		<jdeatina:invoke-bsfn wsName="AddressBookMasterMBF" doc:name="Invoke BSFN MBSFN Address Book" doc:id="6a6022a6-44f2-4b30-8991-a5842bfda1d5" config-ref="JDE_Atina_Config_Non_WS_Operation" target="abRecord" >
+			<jdeatina:input-parameters ><![CDATA[#[output application/json
+---
+{
+	cActionCode: 'I',
+	cSuppressErrorMessages: '1',
+	szVersion: 'ZJDE0001',
+	mnAddressBookNumber: attributes.queryParams.entityID as Number
+}]]]></jdeatina:input-parameters>
+		</jdeatina:invoke-bsfn>
+		<ee:transform doc:name="Transform Message" doc:id="18052ce4-04ec-498e-aa12-0e2145adaaa5" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	status: "Suppier detail",
+	detailSupplier: vars.supplierRecord,
+	detailAB: vars.abRecord
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="demo-jde-portx-connector-create-supplier-flow" doc:id="09a63282-f832-4d66-88bc-05b9f43a152a" >
+		<jdeatina:transaction transactionOperation="Start Transaction" doc:name="Transaction - Start" doc:id="92f95717-c50a-4a66-8e07-d2fc62e794ef" config-ref="JDE_Atina_Config_Non_WS_Operation" target="transaction" >
+			<jdeatina:input-parameters ><![CDATA[#[output application/java
+---
+{
+}]]]></jdeatina:input-parameters>
+		</jdeatina:transaction>
+		<jdeatina:invoke-bsfn wsName="AddressBookMasterMBF" doc:name="Invoke BSFN Create Address Book" doc:id="81e437dd-fe31-4195-9d1e-79e63f4136fe" config-ref="JDE_Atina_Config_Non_WS_Operation" target="addressBookRecord" >
+			<jdeatina:input-parameters ><![CDATA[#[output application/json
+---
+{
+	"Transaction ID": vars.transaction."Transaction ID",
+	cActionCode: 'A',
+	cUpdateMasterFile: '1',
+	szVersion: 'ZJDE0006',
+	szTaxId: (payload.supplierTaxId default ""),
+	szSearchType: 'V',
+	szAlphaName: payload.supplierName,
+	szBusinessUnit: '           1',
+	szAddressLine1: payload.supplierAddress,
+	szAddressLine2: '',
+	szAddressLine3: '',
+	szAddressLine4: '',
+	szCity: payload.supplierCity,
+	szState: payload.suppierState
+}]]]></jdeatina:input-parameters>
+		</jdeatina:invoke-bsfn>
+		<jdeatina:invoke-bsfn wsName="SupplierMaster" doc:name="Invoke BSFN Create Customer" doc:id="f70ca478-43ea-4dc2-996b-96e667444585" config-ref="JDE_Atina_Config_Non_WS_Operation" target="customerRecord" >
+			<jdeatina:input-parameters ><![CDATA[#[output application/json
+---
+{
+	"Transaction ID": vars.transaction."Transaction ID",
+	cActionCode: 'A',
+	cUpdateMasterFile: '1',
+	szVersion: 'ZJDE00002',
+	szCurrencyCodeAP: 'ARS',
+	szCurrencyCodeAmounts: 'ARS',
+	cBatchProcessingMode: '.',
+	mnAddressNumber: vars.addressBookRecord.mnAddressBookNumber,
+	szTaxId: payload.supplierTaxId,
+	szVersionconsolidated: 'ZJDE00002'
+}]]]></jdeatina:input-parameters>
+		</jdeatina:invoke-bsfn>
+		<jdeatina:transaction transactionOperation="Commit Transaction" doc:name="Transaction - Commit" doc:id="68e7e9be-4476-4cb0-aa84-eba4e9e01661" config-ref="JDE_Atina_Config_Non_WS_Operation" target="commit" >
+			<jdeatina:input-parameters ><![CDATA[#[output application/java
+---
+{
+	"Transaction ID": vars.transaction."Transaction ID"
+}]]]></jdeatina:input-parameters>
+		</jdeatina:transaction>
+		<ee:transform doc:name="Transform Message" doc:id="95722586-2236-4e1c-88c1-7657a0c056b0" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	status: "Suppier created successfully",
+	customerId: vars.addressBookRecord.mnAddressBookNumber as String
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="82edc85c-c184-4692-a353-a2a9713b6fe5" when='#[vars.transaction."Transaction ID" != 0]' >
+				<jdeatina:transaction transactionOperation="Rollback Transaction" doc:name="Transaction - Rollback" doc:id="73e71c1a-0dc6-49e2-bda4-6412a8287da8" config-ref="JDE_Atina_Config_Non_WS_Operation" target="commit" >
+					<jdeatina:input-parameters ><![CDATA[#[output application/java
+---
+{
+	"Transaction ID": vars.transaction."Transaction ID"
+}]]]></jdeatina:input-parameters>
+				</jdeatina:transaction>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
 	<flow name="demo-jde-portx-connector-create-customer-flow" doc:id="2f794272-5d6a-4d17-94d8-8f4708ea83f9" >
 		<jdeatina:transaction transactionOperation="Start Transaction" doc:name="Transaction - Start" doc:id="2a3d1984-e7cb-4440-bfb4-341e47779286" config-ref="JDE_Atina_Config_Non_WS_Operation" target="transaction">
 			<jdeatina:input-parameters><![CDATA[#[output application/java
@@ -177,7 +283,7 @@ output application/json
 {
 	"Transaction ID": vars.transaction."Transaction ID",
 	cActionCode: 'A',
-	cUpdateMasterFile: '1',
+	cUpdateMasterFile: '2',
 	cSuppressErrorMessages: '1',
 	szVersion: 'ZJDE0001',
 	mnAddressBookNumber: 0,

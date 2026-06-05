@@ -10,8 +10,8 @@ documentation:
 #  ===========================================
 #  WEB SERVICES 
 #  ===========================================
-  /ws:
-#
+  /ws:  
+ #
 #  Create AB with MO.
 #  
     /createABwithMediaObject:
@@ -77,7 +77,7 @@ documentation:
                     "mediaObjectUrl": "https://example.com/customer/123",
                     "mediaObjectFile": "uploaded.pdf",
                     "status": "SUCCESS"
-                  }         
+                  }       
 #    
 #
 #  Get Address Book using Web Service JP010000 AddressBookManager method getAddressBook.
@@ -521,6 +521,81 @@ documentation:
             body:
               application/json:
                 example: !include examples/bsfn-prc-delete-customer.json
+#
+#  Get Supplier Using MBF
+#
+    /getSupplierUsingBSFN:
+      get:
+        description: Get Supplier using MBF.
+        queryParameters:
+          entityID:
+            displayName: Address Book No
+            type: string
+            required: true
+        responses:
+          200:
+            description: OK
+            body:
+              application/json:
+                example: !include examples/bsfn-prc-get-customer.json
+  #
+  # Create Supplier Using MBF
+  #
+    /createSupplierUsingBSFNs:
+      post:
+        description: Create Supplier using BSFN AddressBookMasterMBF and Supplier Master.
+        body:
+          application/json:
+            type: |
+              {
+                "type": "object",
+                "properties": {
+                  "supplierName": {
+                    "type": "string",
+                    "displayName": "Supplier Name"
+                  },
+                  "supplierAddress": {
+                    "type": "string",
+                    "displayName": "Supplier Address"
+                  }, 
+                  "supplierCity": {
+                    "type": "string",
+                    "displayName": "Supplier Address"
+                  },
+                  "supplierState": {
+                    "type": "string",
+                    "displayName": "Supplier Address"
+                  }, 
+                  "supplierTaxId": {
+                    "type": "string",
+                    "displayName": "Supplier Tax Id"
+                  },
+                  "currency": {
+                    "type": "string",
+                    "displayName": "Currency",
+                    "pattern": "^[A-Z]{3}$",
+                    "description": "3-letter currency code (e.g., USD, EUR, ARS)"
+                  }
+                }
+              }
+            example: |
+              {
+                "supplierName": "John Doe",
+                "supplierAddress": "123 Main St",
+                "supplierCity": "Denver",
+                "supplierState": "CO",
+                "supplierCurrency": "USD",
+                "supplierTaxId": "120033322"
+              }
+        responses:
+          200:
+            description: OK
+            body:
+              application/json:
+                example: !include examples/bsfn-prc-post-supplier.json                  
+  #
+  #  Create SO
+  #             
     /createSOUsingBSFN:
       post:
         description: Create SO using BSFN.
@@ -633,7 +708,7 @@ documentation:
             description: OK
             body:
               application/json:
-                example: !include examples/ube-process.json
+                example: !include examples/ube-process.json  
 #  ===========================================
 #  EVENTS
 #  ===========================================
